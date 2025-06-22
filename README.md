@@ -17,6 +17,6 @@ Built with **Python**, **Dash**, and **WebSockets**, this project simulates how 
 
 ## 🗂️ Project Structure
 
-<img width="1406" alt="Screenshot 2025-06-22 at 10 58 26 AM" src="https://github.com/user-attachments/assets/42c660a2-f917-47d1-8ba3-16f9ec1eaca6" />
-<img width="1414" alt="Screenshot 2025-06-22 at 10 57 54 AM" src="https://github.com/user-attachments/assets/0082295d-cf5f-4f45-8ab6-53f9fda9874d" />
-<img width="1390" alt="Screenshot 2025-06-22 at 10 57 42 AM" src="https://github.com/user-attachments/assets/ebaf65c1-279f-42dc-8665-22ce3e796962" />
+<img width="1414" alt="Screenshot 2025-06-22 at 10 57 54 AM" src="https://github.com/user-attachments/assets/da0e6213-0f33-47ac-bca0-c7fdf6b40095" />
+<img width="1390" alt="Screenshot 2025-06-22 at 10 57 42 AM" src="https://github.com/user-attachments/assets/b10e0a92-4ea6-4066-93db-39c7fe38b9aa" />
+<img width="1406" alt="Screenshot 2025-06-22 at 10 58 26 AM" src="https://github.com/user-attachments/assets/412b7383-ef18-48e3-af0f-25b84481b86b" />
