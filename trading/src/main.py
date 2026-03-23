@@ -29,13 +29,6 @@ class Application:
     Main application class for the trade simulator.
     """
     def __init__(self, websocket_uri: str, dashboard_port: int = 8050):
-        """
-        Initialize the application.
-
-        Args:
-            websocket_uri: URI for the WebSocket connection
-            dashboard_port: Port for the dashboard
-        """
         self.websocket_uri = websocket_uri
         self.dashboard_port = dashboard_port
 
@@ -50,83 +43,55 @@ class Application:
 
         # Create dashboard
         self.dashboard = Dashboard(self.simulator)
+        
+        # EXPOSE THE FLASK SERVER FOR GUNICORN (CRITICAL FOR DEPLOYMENT)
+        self.server = self.dashboard.app.server 
 
     def handle_orderbook_update(self, data: Dict[str, Any]):
-        """
-        Handle orderbook updates from the WebSocket.
-
-        Args:
-            data: Orderbook data
-        """
         try:
-            # Update the simulator with the new data
             processing_time = self.simulator.update_orderbook(data)
             logger.debug(f"Processed orderbook update in {processing_time:.2f} ms")
         except Exception as e:
             logger.error(f"Error processing orderbook update: {e}")
 
     async def run_websocket_client(self):
-        """
-        Run the WebSocket client.
-        """
         try:
             await self.websocket_client.connect()
         except Exception as e:
             logger.error(f"WebSocket client error: {e}")
 
-    def run_dashboard(self):
-        """
-        Run the dashboard.
-        """
+    def run_dashboard_local(self):
+        """Only used for local development."""
         try:
-            self.dashboard.run_server(debug=False, port=self.dashboard_port)
+            self.dashboard.run_server(debug=False, port=self.dashboard_port, host='0.0.0.0')
         except Exception as e:
             logger.error(f"Dashboard error: {e}")
 
-    def run(self):
-        """
-        Run the application.
-        """
-        # Start the dashboard in a separate thread
-        dashboard_thread = threading.Thread(target=self.run_dashboard)
-        dashboard_thread.daemon = True
-        dashboard_thread.start()
+    def start_background_tasks(self):
+        """Starts the websocket listener in a background thread."""
+        def run_async_loop():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.run_websocket_client())
 
-        # Create a sample orderbook for testing
-        sample_data = {
-            'timestamp': '2023-05-04T10:39:13Z',
-            'exchange': 'OKX',
-            'symbol': 'BTC-USDT-SWAP',
-            'asks': [
-                ['45000.5', '1.5'],
-                ['45001.0', '2.0'],
-                ['45002.0', '3.0'],
-                ['45003.0', '4.0'],
-                ['45004.0', '5.0']
-            ],
-            'bids': [
-                ['44999.5', '1.0'],
-                ['44999.0', '2.0'],
-                ['44998.0', '3.0'],
-                ['44997.0', '4.0'],
-                ['44996.0', '5.0']
-            ]
-        }
+        ws_thread = threading.Thread(target=run_async_loop)
+        ws_thread.daemon = True
+        ws_thread.start()
 
-        # Update the simulator with sample data
-        self.simulator.update_orderbook(sample_data)
+# --- INSTANTIATE APP GLOBALLY FOR GUNICORN ---
+# Create a global instance of the application with default settings
+default_uri = os.environ.get('WEBSOCKET_URI', 'wss://ws.gomarket-cpp.goquant.io/ws/l2-orderbook/okx/BTC-USDT-SWAP')
+app_instance = Application(websocket_uri=default_uri)
 
-        # Run the WebSocket client in the main thread
-        try:
-            asyncio.run(self.run_websocket_client())
-        except KeyboardInterrupt:
-            logger.info("Application stopped by user")
-        except Exception as e:
-            logger.error(f"WebSocket client error: {e}")
+# Start the background data fetching immediately
+app_instance.start_background_tasks()
+
+# Expose the raw Flask server to Gunicorn at the module level
+server = app_instance.server 
 
 def main():
     """
-    Main entry point.
+    Main entry point for LOCAL execution only.
     """
     parser = argparse.ArgumentParser(description='Trade Simulator')
     parser.add_argument('--websocket-uri', type=str,
@@ -136,21 +101,19 @@ def main():
                         help='Dashboard port')
     args = parser.parse_args()
 
-    # Create and run the application
-    app = Application(
+    local_app = Application(
         websocket_uri=args.websocket_uri,
         dashboard_port=args.dashboard_port
     )
-
+    
     logger.info(f"Starting application with WebSocket URI: {args.websocket_uri}")
     logger.info(f"Dashboard available at http://localhost:{args.dashboard_port}")
 
-    try:
-        app.run()
-    except KeyboardInterrupt:
-        logger.info("Application stopped by user")
-    except Exception as e:
-        logger.error(f"Application error: {e}")
+    # Start the websocket listener
+    local_app.start_background_tasks()
+    
+    # Run the web server in the main thread (blocks execution)
+    local_app.run_dashboard_local()
 
 if __name__ == "__main__":
     main()
