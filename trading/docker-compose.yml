@@ -1,0 +1,28 @@
+services:
+  redis_broker:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  data_feeder:
+    build:
+      context: ..
+    command: python trading/data_feeder.py
+    environment:
+      REDIS_HOST: redis_broker
+    depends_on:
+      - redis_broker
+    restart: unless-stopped
+
+  web_dashboard:
+    build:
+      context: ..
+    command: gunicorn -b 0.0.0.0:7860 --workers 2 --worker-class gthread --threads 4 --timeout 120 trading.src.main:server
+    environment:
+      REDIS_HOST: redis_broker
+    ports:
+      - "7860:7860"
+    depends_on:
+      - redis_broker
+    restart: unless-stopped
