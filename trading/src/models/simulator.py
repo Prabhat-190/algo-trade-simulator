@@ -1,14 +1,14 @@
 """
-Trade simulator for estimating transaction costs and market impact.
+Trade simulator optimized for reading cache layers and utilizing persisted ML models.
 """
 import time
+import os
+import joblib
 import numpy as np
 from typing import Dict, List, Tuple, Optional, Any
 import logging
 
 import sys
-import os
-
 # Add the current directory to the path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../..'))
 
@@ -29,28 +29,57 @@ class TradeSimulator:
     """
     Simulator for estimating transaction costs and market impact of trades.
     """
-    def __init__(self):
+    def __init__(self, models_dir: Optional[str] = None):
         """
         Initialize the trade simulator.
         """
         self.orderbook = Orderbook()
-        self.slippage_model = SlippageModel()
         self.market_impact_model = AlmgrenChrissModel()
-        self.maker_taker_model = MakerTakerModel()
         self.fee_model = FeeModel()
+        
+        # Initialize ML Models
+        self.maker_taker_model = MakerTakerModel()
+        self.slippage_model = SlippageModel()
+        
+        # Load pre-trained weights if path is provided to prevent fallback resets
+        if models_dir:
+            self._load_persisted_models(models_dir)
 
         self.last_update_time = 0
         self.processing_times = []
 
+    def _load_persisted_models(self, models_dir: str):
+        """
+        Loads pre-trained machine learning models from disk.
+        """
+        try:
+            mt_path = os.path.join(models_dir, 'maker_taker_model.joblib')
+            slip_path = os.path.join(models_dir, 'slippage_model.joblib')
+            
+            if os.path.exists(mt_path):
+                self.maker_taker_model.model, self.maker_taker_model.scaler = joblib.load(mt_path)
+                self.maker_taker_model.is_fitted = True
+                logger.info("Successfully loaded persisted Maker/Taker model weights.")
+                
+            if os.path.exists(slip_path):
+                self.slippage_model.model, self.slippage_model.scaler = joblib.load(slip_path)
+                self.slippage_model.is_fitted = True
+                logger.info("Successfully loaded persisted Slippage model weights.")
+        except Exception as e:
+            logger.error(f"Failed to load persisted ML models, reverting to heuristics: {e}")
+
+    def detect_orderbook_anomalies(self, imbalance: float, spread: float) -> bool:
+        """
+        Anomaly detection layer to intercept manipulation before cost calculations.
+        """
+        if abs(imbalance) > 0.98 or spread <= 0:
+            logger.warning(f"Anomalous market state detected! Imbalance: {imbalance}, Spread: {spread}")
+            return True
+        return False
+
     def update_orderbook(self, data: Dict) -> float:
         """
         Update the orderbook with new data.
-
-        Args:
-            data: Orderbook data
-
-        Returns:
-            float: Processing time in milliseconds
         """
         start_time = time.time()
 
@@ -80,17 +109,6 @@ class TradeSimulator:
                              volatility: float = 0.01) -> Dict[str, Any]:
         """
         Simulate a market order and estimate transaction costs.
-
-        Args:
-            side: 'buy' or 'sell'
-            quantity: Quantity in base currency
-            exchange: Exchange name
-            market_type: Market type (spot, futures)
-            fee_tier: Fee tier
-            volatility: Market volatility
-
-        Returns:
-            Dict: Simulation results
         """
         start_time = time.time()
 
@@ -112,6 +130,9 @@ class TradeSimulator:
                 'error': 'Invalid orderbook metrics'
             }
 
+        # Check for anomalies/manipulation signatures before processing order
+        anomaly_detected = self.detect_orderbook_anomalies(orderbook_imbalance, spread)
+
         # Calculate order value
         order_value = quantity * mid_price
 
@@ -131,7 +152,6 @@ class TradeSimulator:
         )
 
         # Calculate market impact
-        # Assume average daily volume is 100x the current orderbook depth
         orderbook_depth = sum(qty for _, qty in self.orderbook.bids) + sum(qty for _, qty in self.orderbook.asks)
         avg_daily_volume = orderbook_depth * 100
 
@@ -170,15 +190,13 @@ class TradeSimulator:
             'market_impact_percentage': (market_impact['total_impact'] / order_value) * 100 if order_value > 0 else 0,
             'net_cost': net_cost,
             'net_cost_percentage': net_cost_percentage,
+            'anomaly_flag': anomaly_detected,
             'processing_time': processing_time
         }
 
     def get_average_processing_time(self) -> float:
         """
         Get the average processing time for simulations.
-
-        Returns:
-            float: Average processing time in milliseconds
         """
         if not self.processing_times:
             return 0
