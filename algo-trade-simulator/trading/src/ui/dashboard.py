@@ -23,16 +23,14 @@ class Dashboard:
     """
     Dashboard UI for the trade simulator.
     """
-    def __init__(self, simulator, project_store=None):
+    def __init__(self, simulator):
         """
         Initialize the dashboard.
 
         Args:
             simulator: Trade simulator instance
-            project_store: Optional Redis-backed project store
         """
         self.simulator = simulator
-        self.project_store = project_store
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
         # Initialize app layout
@@ -45,50 +43,7 @@ class Dashboard:
         """
         Initialize the dashboard layout.
         """
-        project_options = self.project_store.list_projects() if self.project_store else []
-
-        project_panel = dbc.Card([
-            dbc.CardHeader("Trading Project"),
-            dbc.CardBody([
-                html.Div([
-                    html.Label("Saved Project"),
-                    dcc.Dropdown(
-                        id='saved-project-dropdown',
-                        options=project_options,
-                        value=project_options[0]['value'] if project_options else None,
-                        placeholder='Load a saved setup'
-                    )
-                ], className="mb-3"),
-
-                html.Div([
-                    html.Label("Project Name"),
-                    dcc.Input(
-                        id='project-name-input',
-                        type='text',
-                        value='BTC Scalping Demo',
-                        className="form-control"
-                    )
-                ], className="mb-3"),
-
-                html.Div([
-                    html.Label("Strategy"),
-                    dcc.Dropdown(
-                        id='strategy-dropdown',
-                        options=[
-                            {'label': 'Market Order Simulation', 'value': 'market_order'},
-                            {'label': 'Scalping Cost Check', 'value': 'scalping'},
-                            {'label': 'Swing Trade Cost Check', 'value': 'swing'},
-                            {'label': 'Large Order Impact Check', 'value': 'large_order'}
-                        ],
-                        value='market_order'
-                    )
-                ], className="mb-3"),
-
-                dbc.Button("Save Trading Project", id="save-project-button", color="secondary", className="w-100"),
-                html.Small(id="project-status", className="text-muted d-block mt-2")
-            ])
-        ], className="h-100")
-
+        # Input parameters panel
         input_panel = dbc.Card([
             dbc.CardHeader("Input Parameters"),
             dbc.CardBody([
@@ -187,14 +142,11 @@ class Dashboard:
             ])
         ], className="h-100")
 
+        # Output parameters panel
         output_panel = dbc.Card([
             dbc.CardHeader("Simulation Results"),
             dbc.CardBody([
                 html.Div(id="simulation-results", children=[
-                    html.Div([
-                        html.H5("Project Summary"),
-                        html.P(id="project-summary-output", children="--")
-                    ], className="mb-3"),
                     html.Div([
                         html.H5("Expected Slippage"),
                         html.P(id="slippage-output", children="--")
@@ -228,6 +180,7 @@ class Dashboard:
             ])
         ], className="h-100")
 
+        # Orderbook visualization
         orderbook_viz = dbc.Card([
             dbc.CardHeader("Orderbook Visualization"),
             dbc.CardBody([
@@ -235,6 +188,7 @@ class Dashboard:
             ])
         ], className="mt-4")
 
+        # Cost breakdown visualization
         cost_viz = dbc.Card([
             dbc.CardHeader("Cost Breakdown"),
             dbc.CardBody([
@@ -242,6 +196,7 @@ class Dashboard:
             ])
         ], className="mt-4")
 
+        # Connection status
         connection_status = dbc.Card([
             dbc.CardHeader("Connection Status"),
             dbc.CardBody([
@@ -254,13 +209,13 @@ class Dashboard:
             ])
         ], className="mt-4")
 
+        # Main layout
         self.app.layout = dbc.Container([
             html.H1("Trade Simulator", className="my-4"),
 
             dbc.Row([
-                dbc.Col(project_panel, width=4),
                 dbc.Col(input_panel, width=4),
-                dbc.Col(output_panel, width=4)
+                dbc.Col(output_panel, width=8)
             ], className="mb-4"),
 
             dbc.Row([
@@ -272,9 +227,10 @@ class Dashboard:
                 dbc.Col(connection_status, width=12)
             ]),
 
+            # Add interval component for periodic updates
             dcc.Interval(
                 id='interval-component',
-                interval=1000,
+                interval=1000,  # in milliseconds
                 n_intervals=0
             )
         ], fluid=True)
@@ -285,77 +241,6 @@ class Dashboard:
         """
         @self.app.callback(
             [
-                Output('saved-project-dropdown', 'options'),
-                Output('saved-project-dropdown', 'value'),
-                Output('project-status', 'children')
-            ],
-            [Input('save-project-button', 'n_clicks')],
-            [
-                State('project-name-input', 'value'),
-                State('strategy-dropdown', 'value'),
-                State('exchange-dropdown', 'value'),
-                State('market-type-dropdown', 'value'),
-                State('symbol-input', 'value'),
-                State('side-dropdown', 'value'),
-                State('quantity-input', 'value'),
-                State('volatility-slider', 'value'),
-                State('fee-tier-dropdown', 'value')
-            ],
-            prevent_initial_call=True
-        )
-        def save_project(n_clicks, name, strategy, exchange, market_type, symbol, side, quantity, volatility, fee_tier):
-            if not self.project_store:
-                return [], None, "Project store is not configured."
-            from src.models.trading_project import TradingProject
-            project = TradingProject.from_dict({
-                'name': name,
-                'strategy': strategy,
-                'exchange': exchange,
-                'market_type': market_type,
-                'symbol': symbol,
-                'side': side,
-                'quantity_usd': quantity,
-                'volatility': volatility,
-                'fee_tier': fee_tier,
-            })
-            self.project_store.save(project)
-            return self.project_store.list_projects(), project.name, f"Saved project: {project.name}"
-
-        @self.app.callback(
-            [
-                Output('project-name-input', 'value'),
-                Output('strategy-dropdown', 'value'),
-                Output('exchange-dropdown', 'value'),
-                Output('market-type-dropdown', 'value'),
-                Output('symbol-input', 'value'),
-                Output('side-dropdown', 'value'),
-                Output('quantity-input', 'value'),
-                Output('volatility-slider', 'value'),
-                Output('fee-tier-dropdown', 'value')
-            ],
-            [Input('saved-project-dropdown', 'value')]
-        )
-        def load_project(project_name):
-            if not self.project_store or not project_name:
-                raise dash.exceptions.PreventUpdate
-            project = self.project_store.get(project_name)
-            if not project:
-                raise dash.exceptions.PreventUpdate
-            return (
-                project.name,
-                project.strategy,
-                project.exchange,
-                project.market_type,
-                project.symbol,
-                project.side,
-                project.quantity_usd,
-                project.volatility,
-                project.fee_tier,
-            )
-
-        @self.app.callback(
-            [
-                Output("project-summary-output", "children"),
                 Output("slippage-output", "children"),
                 Output("fees-output", "children"),
                 Output("market-impact-output", "children"),
@@ -367,8 +252,6 @@ class Dashboard:
             ],
             [Input("simulate-button", "n_clicks")],
             [
-                State("project-name-input", "value"),
-                State("strategy-dropdown", "value"),
                 State("exchange-dropdown", "value"),
                 State("market-type-dropdown", "value"),
                 State("symbol-input", "value"),
@@ -379,19 +262,21 @@ class Dashboard:
             ],
             prevent_initial_call=True
         )
-        def simulate_order(n_clicks, project_name, strategy, exchange, market_type, symbol, side, quantity, volatility, fee_tier):
+        def simulate_order(n_clicks, exchange, market_type, symbol, side, quantity, volatility, fee_tier):
             """
             Simulate an order and update the UI.
             """
             if n_clicks is None:
-                return ["--"] * 7 + [go.Figure(), go.Figure()]
+                return ["--"] * 6 + [go.Figure(), go.Figure()]
 
+            # Convert quantity from USD to base currency
             mid_price = self.simulator.orderbook.get_mid_price()
             if mid_price is None or mid_price == 0:
-                return ["Orderbook not available"] * 7 + [go.Figure(), go.Figure()]
+                return ["Orderbook not available"] * 6 + [go.Figure(), go.Figure()]
 
             base_quantity = quantity / mid_price
 
+            # Simulate the order
             result = self.simulator.simulate_market_order(
                 side=side,
                 quantity=base_quantity,
@@ -402,10 +287,9 @@ class Dashboard:
             )
 
             if 'error' in result:
-                return [result['error']] * 7 + [go.Figure(), go.Figure()]
+                return [result['error']] * 6 + [go.Figure(), go.Figure()]
 
-            strategy_label = (strategy or 'market_order').replace('_', ' ').title()
-            project_summary_output = f"{project_name or 'Untitled Project'} | {strategy_label} | {symbol} | {side.upper()} ${quantity:,.2f}"
+            # Format outputs
             slippage_output = f"${result['slippage']:.4f} ({result['slippage_percentage']:.4f}%)"
             fees_output = f"${result['fees']['total_fee']:.4f} ({result['fees']['effective_rate'] * 100:.4f}%)"
             market_impact_output = f"${result['market_impact']['total_impact']:.4f} ({result['market_impact_percentage']:.4f}%)"
@@ -413,11 +297,13 @@ class Dashboard:
             maker_taker_output = f"Maker: {result['maker_proportion'] * 100:.2f}% / Taker: {(1 - result['maker_proportion']) * 100:.2f}%"
             latency_output = f"{result['processing_time']:.2f} ms"
 
+            # Create orderbook visualization
             orderbook_fig = self.create_orderbook_visualization()
+
+            # Create cost breakdown visualization
             cost_breakdown_fig = self.create_cost_breakdown_visualization(result)
 
             return [
-                project_summary_output,
                 slippage_output,
                 fees_output,
                 market_impact_output,
@@ -528,9 +414,12 @@ class Dashboard:
             port: Port to run on
         """
         try:
+            # Try the new method first
             self.app.run(debug=debug, port=port, host="0.0.0.0")
-        except Exception:
+        except Exception as e:
+            # Fall back to the old method
             try:
                 self.app.run_server(debug=debug, port=port, host="0.0.0.0")
             except Exception as e:
+                # If both fail, log the error
                 logging.error(f"Failed to start dashboard: {e}")

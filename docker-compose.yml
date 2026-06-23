@@ -1,0 +1,70 @@
+services:
+  redis_broker:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  data_feeder:
+    build: .
+    command: python trading/data_feeder.py
+    environment:
+      REDIS_HOST: redis_broker
+      WEBSOCKET_URI: ${WEBSOCKET_URI:-wss://ws.gomarket-cpp.goquant.io/ws/l2-orderbook/okx/BTC-USDT-SWAP}
+    depends_on:
+      redis_broker:
+        condition: service_healthy
+    restart: unless-stopped
+
+  stock_data_feeder:
+    build: .
+    command: python trading/stock_data_feeder.py
+    profiles:
+      - stocks
+    environment:
+      REDIS_HOST: redis_broker
+      STOCK_SYMBOL: ${STOCK_SYMBOL:-AAPL}
+      STOCK_PROVIDER: ${STOCK_PROVIDER:-finnhub}
+      STOCK_POLL_INTERVAL: ${STOCK_POLL_INTERVAL:-15}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-}
+    depends_on:
+      redis_broker:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web_dashboard:
+    build: .
+    environment:
+      REDIS_HOST: redis_broker
+      PORT: 7860
+      WEB_CONCURRENCY: 2
+      GUNICORN_THREADS: 4
+    expose:
+      - "7860"
+    depends_on:
+      redis_broker:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860/healthz', timeout=2)"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  load_balancer:
+    image: nginx:1.27-alpine
+    ports:
+      - "7860:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web_dashboard
+    restart: unless-stopped
