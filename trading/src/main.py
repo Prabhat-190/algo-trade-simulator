@@ -248,7 +248,7 @@ class Application:
                         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
                     }
                     
-                    input:focus, .Select-control:hover, .form-control:focus {
+                    input:focus, .form-control:focus {
                         border-color: var(--cyber-cyan) !important;
                         background-color: var(--bg-input-focus) !important;
                         box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
