@@ -256,6 +256,17 @@ class Application:
                         color: #ffffff !important;
                     }
 
+                    .Select-value-label,
+                    .Select-placeholder,
+                    .Select-input,
+                    .Select-input input,
+                    .Select-menu-outer,
+                    .Select-menu-outer *,
+                    .Select-option,
+                    .VirtualizedSelectOption {
+                        color: #000000 !important;
+                    }
+
                     label {
                         color: var(--text-silver-gray) !important;
                         font-weight: 600;
