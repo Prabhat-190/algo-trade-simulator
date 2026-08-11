@@ -238,7 +238,7 @@ class Application:
                     }
                     
                     /* Frosted Input Fields and Dropdown selection layers overrides */
-                    input, .Select-control, .form-control {
+                    input, .form-control {
                         background-color: rgba(4, 6, 10, 0.8) !important;
                         backdrop-filter: blur(4px);
                         border: 1px solid var(--border-slate-glass) !important;
@@ -254,6 +254,56 @@ class Application:
                         box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
                         outline: none;
                         color: #ffffff !important;
+                    }
+
+                    .Select-control {
+                        background-color: #ffffff !important;
+                        border: 1px solid #94a3b8 !important;
+                        border-radius: 6px !important;
+                        color: #000000 !important;
+                        height: 40px !important;
+                        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                    }
+
+                    .Select-control:hover,
+                    .is-focused > .Select-control {
+                        border-color: var(--cyber-cyan) !important;
+                        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
+                    }
+
+                    .Select-value-label,
+                    .Select-placeholder,
+                    .Select-input,
+                    .Select-input input,
+                    .Select-clear-zone,
+                    .Select-arrow-zone,
+                    .Select-menu-outer,
+                    .Select-menu-outer *,
+                    .Select-option,
+                    .VirtualizedSelectOption {
+                        color: #000000 !important;
+                    }
+
+                    .Select-input input {
+                        background: transparent !important;
+                    }
+
+                    .Select-menu-outer,
+                    .Select-menu,
+                    .Select-option,
+                    .VirtualizedSelectOption {
+                        background-color: #ffffff !important;
+                    }
+
+                    .Select-option.is-focused,
+                    .VirtualizedSelectFocusedOption {
+                        background-color: #e2e8f0 !important;
+                        color: #000000 !important;
+                    }
+
+                    .Select-option.is-selected {
+                        background-color: #cbd5e1 !important;
+                        color: #000000 !important;
                     }
 
                     label {
