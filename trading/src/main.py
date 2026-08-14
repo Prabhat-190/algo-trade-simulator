@@ -166,9 +166,18 @@ class Application:
                         border-top-right-radius: 14px !important;
                     }
 
-                    /* CRITICAL HIGH-CONTRAST READABILITY OVERRIDES FOR SIMULATION RESULTS */
-                    .card-body, .card-body p, .card-body div, .card-body span {
+                    /* High-contrast card text without overriding nested controls */
+                    .card-body {
                         color: var(--text-premium-white) !important;
+                    }
+
+                    .card-body p {
+                        color: var(--text-premium-white);
+                    }
+
+                    #project-status,
+                    .text-muted {
+                        color: var(--text-silver-gray) !important;
                     }
 
                     .card-body h5, .card-body h4 {
@@ -256,6 +265,13 @@ class Application:
                         color: #ffffff !important;
                     }
 
+                    .card-body .Select,
+                    .card-body .Select div,
+                    .card-body .Select span,
+                    .card-body .Select input {
+                        color: #0f172a !important;
+                    }
+
                     .Select-control {
                         background-color: #ffffff !important;
                         border: 1px solid #94a3b8 !important;
@@ -275,6 +291,7 @@ class Application:
                     .Select-placeholder,
                     .Select-input,
                     .Select-input input,
+                    .Select-noresults,
                     .Select-clear-zone,
                     .Select-arrow-zone,
                     .Select-menu-outer,
@@ -286,6 +303,9 @@ class Application:
 
                     .Select-input input {
                         background: transparent !important;
+                        box-shadow: none !important;
+                        height: auto !important;
+                        padding: 0 !important;
                     }
 
                     .Select-menu-outer,
@@ -304,6 +324,32 @@ class Application:
                     .Select-option.is-selected {
                         background-color: #cbd5e1 !important;
                         color: #000000 !important;
+                    }
+
+                    .Select-placeholder {
+                        color: #475569 !important;
+                    }
+
+                    .Select-arrow {
+                        border-top-color: #0f172a !important;
+                    }
+
+                    .is-open > .Select-control .Select-arrow {
+                        border-bottom-color: #0f172a !important;
+                        border-top-color: transparent !important;
+                    }
+
+                    .rc-slider-mark-text {
+                        color: var(--text-silver-gray) !important;
+                    }
+
+                    .rc-slider-track {
+                        background-color: var(--cyber-cyan) !important;
+                    }
+
+                    .rc-slider-dot-active,
+                    .rc-slider-handle {
+                        border-color: var(--cyber-cyan) !important;
                     }
 
                     label {
