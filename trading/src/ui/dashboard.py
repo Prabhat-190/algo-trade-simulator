@@ -231,14 +231,22 @@ class Dashboard:
         orderbook_viz = dbc.Card([
             dbc.CardHeader("Orderbook Visualization"),
             dbc.CardBody([
-                dcc.Graph(id="orderbook-graph", style={"height": "400px"})
+                dcc.Graph(
+                    id="orderbook-graph",
+                    figure=self.create_orderbook_visualization(),
+                    style={"height": "400px"}
+                )
             ])
         ], className="mt-4")
 
         cost_viz = dbc.Card([
             dbc.CardHeader("Cost Breakdown"),
             dbc.CardBody([
-                dcc.Graph(id="cost-breakdown-graph", style={"height": "400px"})
+                dcc.Graph(
+                    id="cost-breakdown-graph",
+                    figure=self.create_empty_visualization("Run simulation to view cost breakdown"),
+                    style={"height": "400px"}
+                )
             ])
         ], className="mt-4")
 
@@ -384,11 +392,17 @@ class Dashboard:
             Simulate an order and update the UI.
             """
             if n_clicks is None:
-                return ["--"] * 7 + [go.Figure(), go.Figure()]
+                return ["--"] * 7 + [
+                    self.create_orderbook_visualization(),
+                    self.create_empty_visualization("Run simulation to view cost breakdown")
+                ]
 
             mid_price = self.simulator.orderbook.get_mid_price()
             if mid_price is None or mid_price == 0:
-                return ["Orderbook not available"] * 7 + [go.Figure(), go.Figure()]
+                return ["Orderbook not available"] * 7 + [
+                    self.create_orderbook_visualization(),
+                    self.create_empty_visualization("Orderbook data is required for cost breakdown")
+                ]
 
             base_quantity = quantity / mid_price
 
@@ -402,7 +416,10 @@ class Dashboard:
             )
 
             if 'error' in result:
-                return [result['error']] * 7 + [go.Figure(), go.Figure()]
+                return [result['error']] * 7 + [
+                    self.create_orderbook_visualization(),
+                    self.create_empty_visualization(result['error'])
+                ]
 
             strategy_label = (strategy or 'market_order').replace('_', ' ').title()
             project_summary_output = f"{project_name or 'Untitled Project'} | {strategy_label} | {symbol} | {side.upper()} ${quantity:,.2f}"
@@ -453,6 +470,55 @@ class Dashboard:
 
             return status, f"Last update: {last_update}"
 
+    def apply_chart_theme(self, fig: go.Figure) -> go.Figure:
+        """
+        Apply the dashboard dark theme to Plotly figures.
+        """
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(4,6,10,0.72)',
+            font={'color': '#ffffff'},
+            title_font={'color': '#ffffff'},
+            legend={
+                'font': {'color': '#ffffff'},
+                'bgcolor': 'rgba(4,6,10,0.45)',
+                'bordercolor': 'rgba(255,255,255,0.15)',
+                'borderwidth': 1
+            },
+            margin={'l': 48, 'r': 24, 't': 56, 'b': 48}
+        )
+        fig.update_xaxes(
+            color='#ffffff',
+            gridcolor='rgba(176,196,222,0.18)',
+            zerolinecolor='rgba(176,196,222,0.35)',
+            linecolor='rgba(176,196,222,0.35)'
+        )
+        fig.update_yaxes(
+            color='#ffffff',
+            gridcolor='rgba(176,196,222,0.18)',
+            zerolinecolor='rgba(176,196,222,0.35)',
+            linecolor='rgba(176,196,222,0.35)'
+        )
+        return fig
+
+    def create_empty_visualization(self, message: str) -> go.Figure:
+        """
+        Create a themed placeholder figure so charts are visible before data arrives.
+        """
+        fig = go.Figure()
+        fig.add_annotation(
+            text=message,
+            x=0.5,
+            y=0.5,
+            xref='paper',
+            yref='paper',
+            showarrow=False,
+            font={'size': 16, 'color': '#b0c4de'}
+        )
+        fig.update_xaxes(visible=False)
+        fig.update_yaxes(visible=False)
+        return self.apply_chart_theme(fig)
+
     def create_orderbook_visualization(self) -> go.Figure:
         """
         Create a visualization of the orderbook.
@@ -464,12 +530,15 @@ class Dashboard:
 
         fig = go.Figure()
 
+        if asks_df.empty and bids_df.empty:
+            return self.create_empty_visualization("Waiting for orderbook data")
+
         if not asks_df.empty:
             fig.add_trace(go.Bar(
                 x=asks_df['price'],
                 y=asks_df['quantity'],
                 name='Asks',
-                marker_color='red'
+                marker_color='#ff1744'
             ))
 
         if not bids_df.empty:
@@ -477,7 +546,7 @@ class Dashboard:
                 x=bids_df['price'],
                 y=bids_df['quantity'],
                 name='Bids',
-                marker_color='green'
+                marker_color='#00e676'
             ))
 
         fig.update_layout(
@@ -488,7 +557,7 @@ class Dashboard:
             bargap=0
         )
 
-        return fig
+        return self.apply_chart_theme(fig)
 
     def create_cost_breakdown_visualization(self, result: Dict) -> go.Figure:
         """
@@ -507,17 +576,22 @@ class Dashboard:
             result['market_impact']['total_impact']
         ]
 
+        if not any(values):
+            return self.create_empty_visualization("No cost values to display")
+
         fig = go.Figure(data=[go.Pie(
             labels=categories,
             values=values,
-            hole=.3
+            hole=.3,
+            marker={'colors': ['#ffd600', '#00e5ff', '#ff1744']},
+            textfont={'color': '#ffffff'}
         )])
 
         fig.update_layout(
             title='Cost Breakdown'
         )
 
-        return fig
+        return self.apply_chart_theme(fig)
 
     def run_server(self, debug=True, port=8050):
         """
