@@ -20,9 +20,9 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 import plotly.graph_objects as go
 
-from src.ui.dashboard import Dashboard
-from src.models.simulator import TradeSimulator
-from src.models.trading_project import TradingProjectStore
+from .ui.dashboard import Dashboard
+from .models.simulator import TradeSimulator
+from .models.trading_project import TradingProjectStore
 
 # Configure production-ready log stream matrix
 logging.basicConfig(
