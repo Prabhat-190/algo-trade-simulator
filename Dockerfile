@@ -35,4 +35,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860/healthz', timeout=5)" || exit 1
 
 # Run with gunicorn
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} --workers ${WEB_CONCURRENCY} --worker-class gthread --threads ${GUNICORN_THREADS} --timeout 120 --access-logfile - --error-logfile - src.main:server"]
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} --workers ${WEB_CONCURRENCY} --worker-class gthread --threads ${GUNICORN_THREADS} --timeout 120 --access-logfile - --error-logfile - trading.src.main:server"]
