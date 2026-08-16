@@ -1,0 +1,63 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/healthz"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[services]
+# Redis service - Railway provides managed Redis
+# Add a Redis service in Railway dashboard and reference it via REDIS_HOST/REDIS_PORT
+
+# Web Dashboard service
+web_dashboard:
+  variables:
+    - name: PORT
+      value: "7860"
+    - name: WEB_CONCURRENCY
+      value: "2"
+    - name: GUNICORN_THREADS
+      value: "4"
+    - name: REDIS_HOST
+      value: "${{REDIS_HOST}}"
+    - name: REDIS_PORT
+      value: "${{REDIS_PORT}}"
+    - name: MODELS_DIR
+      value: "/app/models"
+
+# Data Feeder service
+data_feeder:
+  variables:
+    - name: REDIS_HOST
+      value: "${{REDIS_HOST}}"
+    - name: REDIS_PORT
+      value: "${{REDIS_PORT}}"
+    - name: WEBSOCKET_URI
+      value: "${{WEBSOCKET_URI}}"
+
+# Stock Data Feeder service (optional, for stock trading)
+stock_data_feeder:
+  variables:
+    - name: REDIS_HOST
+      value: "${{REDIS_HOST}}"
+    - name: REDIS_PORT
+      value: "${{REDIS_PORT}}"
+    - name: STOCK_SYMBOL
+      value: "${{STOCK_SYMBOL:-AAPL}}"
+    - name: STOCK_PROVIDER
+      value: "${{STOCK_PROVIDER:-finnhub}}"
+    - name: STOCK_POLL_INTERVAL
+      value: "${{STOCK_POLL_INTERVAL:-15}}"
+    - name: FINNHUB_API_KEY
+      value: "${{FINNHUB_API_KEY}}"
+    - name: ALPHA_VANTAGE_API_KEY
+      value: "${{ALPHA_VANTAGE_API_KEY}}"
+
+# Nginx Load Balancer service
+nginx:
+  variables:
+    - name: PORT
+      value: "80"

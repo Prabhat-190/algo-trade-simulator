@@ -8,15 +8,11 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional, Any
 import logging
 
-import sys
-# Add the current directory to the path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../..'))
-
-from src.data.orderbook import Orderbook
-from src.models.slippage_model import SlippageModel
-from src.models.market_impact import AlmgrenChrissModel
-from src.models.maker_taker import MakerTakerModel
-from src.models.fee_model import FeeModel
+from ..data.orderbook import Orderbook
+from .slippage_model import SlippageModel
+from .market_impact import AlmgrenChrissModel
+from .maker_taker import MakerTakerModel
+from .fee_model import FeeModel
 
 # Configure logging
 logging.basicConfig(

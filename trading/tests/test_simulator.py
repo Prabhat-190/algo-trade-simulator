@@ -2,12 +2,7 @@
 Tests for the trade simulator.
 """
 import unittest
-import sys
-import os
 import json
-
-# Add the src directory to the path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.models.simulator import TradeSimulator
 from src.data.orderbook import Orderbook
