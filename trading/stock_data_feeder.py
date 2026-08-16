@@ -9,10 +9,14 @@ import argparse
 import json
 import logging
 import os
+import sys
 import time
 import urllib.parse
 import urllib.request
 from typing import Dict, List
+
+import redis
+from redis.exceptions import RedisError, ConnectionError as RedisConnectionError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("StockDataFeeder")
@@ -32,8 +36,45 @@ class StockQuoteFeeder:
         self.provider = provider.lower()
         self.api_key = api_key
         self.poll_interval = poll_interval
-        import redis
-        self.redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+        self.redis_host = redis_host
+        self.redis_port = redis_port
+        self.redis_client: redis.Redis | None = None
+        self._redis_connected = False
+        
+        # Initialize Redis connection
+        self._init_redis()
+
+    def _init_redis(self) -> None:
+        """Initialize Redis connection with retry logic."""
+        max_retries = 5
+        retry_delay = 1.0
+        
+        for attempt in range(max_retries):
+            try:
+                logger.info(f"Connecting to Redis at {self.redis_host}:{self.redis_port} (attempt {attempt + 1}/{max_retries})")
+                self.redis_client = redis.Redis(
+                    host=self.redis_host,
+                    port=self.redis_port,
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5,
+                    retry_on_timeout=True,
+                    health_check_interval=30,
+                )
+                # Test the connection
+                self.redis_client.ping()
+                self._redis_connected = True
+                logger.info("Successfully connected to Redis")
+                return
+            except (RedisConnectionError, RedisError, TimeoutError) as e:
+                logger.warning(f"Redis connection attempt {attempt + 1} failed: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    logger.error(f"Failed to connect to Redis after {max_retries} attempts. Running without Redis.")
+                    self.redis_client = None
+                    self._redis_connected = False
 
     def fetch_quote(self) -> Dict:
         if self.provider == "finnhub":
@@ -104,11 +145,21 @@ class StockQuoteFeeder:
         return levels
 
     def publish(self, orderbook: Dict) -> None:
-        payload = json.dumps(orderbook)
-        channel = f"orderbook:{self.symbol}:stream"
-        self.redis_client.publish(channel, payload)
-        self.redis_client.set(f"orderbook:{self.symbol}:latest", payload)
-        logger.info("Published %s stock quote as synthetic orderbook at %.4f", self.symbol, orderbook["asks"][0][0])
+        if not self._redis_connected or not self.redis_client:
+            logger.warning("Redis not connected, skipping orderbook publish")
+            return
+            
+        try:
+            payload = json.dumps(orderbook)
+            channel = f"orderbook:{self.symbol}:stream"
+            self.redis_client.publish(channel, payload)
+            self.redis_client.set(f"orderbook:{self.symbol}:latest", payload)
+            logger.info("Published %s stock quote as synthetic orderbook at %.4f", self.symbol, orderbook["asks"][0][0])
+        except (RedisConnectionError, RedisError, TimeoutError) as e:
+            logger.error(f"Redis error publishing data: {e}. Attempting to reconnect...")
+            self._init_redis()
+        except Exception as exc:
+            logger.error("Unable to publish stock quote: %s", exc)
 
     def start(self) -> None:
         logger.info("Starting stock quote feeder for %s using %s", self.symbol, self.provider)

@@ -10,15 +10,10 @@ import logging
 import os
 import sys
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import redis
-
-# Resilient path resolution to ensure module visibility across isolated runtimes
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, current_dir)
-sys.path.insert(0, os.path.abspath(os.path.join(current_dir, '..')))
-sys.path.insert(0, os.path.abspath(os.path.join(current_dir, 'trading')))
+from redis.exceptions import RedisError, ConnectionError as RedisConnectionError
 
 import dash
 import dash_bootstrap_components as dbc
@@ -39,14 +34,20 @@ logger = logging.getLogger("ProductionDashApplication")
 # Global mutex to secure the shared simulator data frames from concurrent race conditions
 state_lock = threading.Lock()
 
+
 class Application:
     """
     Core application wrapper coordinating state storage engines, trading simulations,
     live container diagnostic probes, and the premium blurred dark dashboard cockpit.
     """
     def __init__(self, redis_host: str = 'localhost', redis_port: int = 6379):
-        logger.info(f"Establishing high-speed channel link to Redis broker at {redis_host}:{redis_port}")
-        self.redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+        self.redis_host = redis_host
+        self.redis_port = redis_port
+        self.redis_client: Optional[redis.Redis] = None
+        self._redis_connected = False
+        
+        # Try to connect to Redis with retries
+        self._init_redis()
         
         # Pull optional environment configuration for ML model weight contexts
         models_dir = os.environ.get('MODELS_DIR', None)
@@ -54,7 +55,7 @@ class Application:
         # Instantiate thread-safe quant calculation engine
         self.simulator = TradeSimulator(models_dir=models_dir)
 
-        # Initialize internal storage layer infrastructure
+        # Initialize internal storage layer infrastructure (with or without Redis)
         self.project_store = TradingProjectStore(redis_client=self.redis_client)
         
         # Instantiate Dash UI components using a dark baseline stylesheet template
@@ -64,10 +65,42 @@ class Application:
         self._inject_glassmorphic_visual_architecture()
 
         # 🩺 STEP 2: Establish container status tracking paths
-        self._register_health_monitor_route(redis_host, redis_port)
+        self._register_health_monitor_route()
         
         # Expose active Flask engine reference securely upstream for Gunicorn multi-process bounds
         self.server = self.dashboard.app.server 
+
+    def _init_redis(self) -> None:
+        """Initialize Redis connection with retry logic."""
+        max_retries = 3
+        retry_delay = 1.0
+        
+        for attempt in range(max_retries):
+            try:
+                logger.info(f"Connecting to Redis at {self.redis_host}:{self.redis_port} (attempt {attempt + 1}/{max_retries})")
+                self.redis_client = redis.Redis(
+                    host=self.redis_host,
+                    port=self.redis_port,
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5,
+                    retry_on_timeout=True,
+                    health_check_interval=30,
+                )
+                # Test the connection
+                self.redis_client.ping()
+                self._redis_connected = True
+                logger.info("Successfully connected to Redis")
+                return
+            except (RedisConnectionError, RedisError, TimeoutError) as e:
+                logger.warning(f"Redis connection attempt {attempt + 1} failed: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    logger.error(f"Failed to connect to Redis after {max_retries} attempts. Running without Redis.")
+                    self.redis_client = None
+                    self._redis_connected = False
 
     def _inject_glassmorphic_visual_architecture(self):
         """
@@ -376,17 +409,40 @@ class Application:
         </html>
         '''
 
-    def _register_health_monitor_route(self, redis_host: str, redis_port: int):
+    def _register_health_monitor_route(self):
         """ Binds system metric check validations to core server routes """
         @self.dashboard.app.server.get('/healthz')
         def healthz():
+            redis_status = "disconnected"
+            redis_error = None
+            
+            if self.redis_client:
+                try:
+                    self.redis_client.ping()
+                    redis_status = "connected"
+                except (RedisConnectionError, RedisError, TimeoutError) as e:
+                    redis_status = "error"
+                    redis_error = str(e)
+            
             with state_lock:
                 last_update = self.simulator.last_update_time
+            
+            time_since_update = time.time() - last_update if last_update > 0 else None
+            market_data_status = "fresh" if time_since_update is not None and time_since_update < 30 else "stale"
+            
             return {
                 'status': 'ok',
-                'redis_host': redis_host,
-                'redis_port': redis_port,
-                'last_orderbook_update': last_update,
+                'redis': {
+                    'status': redis_status,
+                    'host': self.redis_host,
+                    'port': self.redis_port,
+                    'error': redis_error
+                },
+                'market_data': {
+                    'status': market_data_status,
+                    'last_update_timestamp': last_update,
+                    'seconds_since_update': time_since_update
+                },
                 'timestamp': time.time()
             }, 200
 
@@ -395,6 +451,10 @@ class Application:
         Background subscriber queue mapping real-time data ticks forwarded 
         by the decoupled feeder microservice service layers.
         """
+        if not self.redis_client:
+            logger.warning("Redis client not available, skipping Redis feed listener")
+            return
+            
         pubsub = self.redis_client.pubsub()
         pubsub.psubscribe("orderbook:*:stream")
         logger.info("Dash server engine connected to Redis synchronization backbone.")
@@ -411,10 +471,13 @@ class Application:
 
     def start_background_tasks(self):
         """ Spawns daemon infrastructure processing threads dedicated entirely to stream handling """
-        sync_thread = threading.Thread(target=self.listen_to_redis_feed)
-        sync_thread.daemon = True
-        sync_thread.start()
-        logger.info("Asynchronous Redis monitoring matrix initialized successfully.")
+        if self.redis_client:
+            sync_thread = threading.Thread(target=self.listen_to_redis_feed)
+            sync_thread.daemon = True
+            sync_thread.start()
+            logger.info("Asynchronous Redis monitoring matrix initialized successfully.")
+        else:
+            logger.warning("Redis not available, background tasks not started")
 
     def run_dashboard_local(self, port: int = 8050):
         """ Local system fallback bootstrap framework entrypoint """
@@ -422,6 +485,7 @@ class Application:
             self.dashboard.run_server(debug=False, port=port, host='0.0.0.0')
         except Exception as e:
             logger.error(f"UI visualization crashed on startup loops: {e}")
+
 
 # --- GLOBAL ARCHITECTURE BOUNDARY FOR UPSTREAM WORKERS / LOAD BALANCERS ---
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
@@ -432,6 +496,7 @@ app_instance.start_background_tasks()
 
 # Expose WSGI context boundaries to container management tools (Gunicorn)
 server = app_instance.server 
+
 
 def main():
     """
@@ -444,6 +509,7 @@ def main():
 
     logger.info(f"Launching production interface on port allocation: {args.port}")
     app_instance.run_dashboard_local(port=args.port)
+
 
 if __name__ == "__main__":
     main()

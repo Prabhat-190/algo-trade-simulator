@@ -1,11 +1,7 @@
 """
 Tests for the stock quote feeder.
 """
-import os
-import sys
 import unittest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from stock_data_feeder import StockQuoteFeeder
 
