@@ -1,0 +1,9 @@
+# Development and demo dependencies. Not installed in the production image.
+-r requirements.txt
+
+pytest>=8.0,<10
+ruff>=0.6,<1
+
+# Only used by trading/examples/ and trading/src/visualization/, which render
+# static Almgren-Chriss plots outside the web app.
+matplotlib>=3.8,<4

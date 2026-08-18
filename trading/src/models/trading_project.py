@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class TradingProject:
     fee_tier: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TradingProject":
+    def from_dict(cls, data: dict[str, Any]) -> TradingProject:
         return cls(
             name=str(data.get("name", "Untitled Project")).strip() or "Untitled Project",
             strategy=str(data.get("strategy", "market_order")),
@@ -39,7 +39,7 @@ class TradingProject:
             fee_tier=str(data.get("fee_tier", "VIP0")),
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -54,9 +54,9 @@ class TradingProjectStore:
 
     redis_key = "trading_projects"
 
-    def __init__(self, redis_client: Optional[Any] = None):
+    def __init__(self, redis_client: Any | None = None):
         self.redis_client = redis_client
-        self._memory: Dict[str, Dict[str, Any]] = {}
+        self._memory: dict[str, dict[str, Any]] = {}
         self.save(
             TradingProject(
                 name="BTC Scalping Demo",
@@ -81,7 +81,7 @@ class TradingProjectStore:
         except Exception as exc:
             logger.warning("Unable to save project to Redis; using memory fallback: %s", exc)
 
-    def get(self, name: str) -> Optional[TradingProject]:
+    def get(self, name: str) -> TradingProject | None:
         if not name:
             return None
         payload = None
@@ -95,7 +95,7 @@ class TradingProjectStore:
         data = self._memory.get(name)
         return TradingProject.from_dict(data) if data else None
 
-    def list_projects(self) -> List[Dict[str, str]]:
+    def list_projects(self) -> list[dict[str, str]]:
         names = set(self._memory.keys())
         if self.redis_client is not None:
             try:

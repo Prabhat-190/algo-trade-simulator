@@ -1,8 +1,29 @@
+# Version control and CI
 .git
+.gitignore
 .github
+
+# Python artefacts
 __pycache__
-*.pyc
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# Local environments and secrets
 .venv
+venv
 .env
+
+# Tests, docs and dev-only config are not needed in the runtime image
+trading/tests
+trading/examples
+requirements-dev.txt
+pyproject.toml
+README.md
+deploy
+docker-compose.yml
+railway.toml
+
+# OS noise
 .DS_Store
-algo-trade-simulator
