@@ -1,0 +1,416 @@
+/* Dark glassmorphic theme for the trade simulator dashboard.
+   Dash serves everything in this folder automatically. */
+
+:root {
+    --bg-deep-obsidian: #04060a;
+    --bg-blur-card: rgba(13, 20, 34, 0.65);
+    --bg-input-focus: rgba(24, 38, 58, 0.85);
+    --border-slate-glass: rgba(255, 255, 255, 0.08);
+    --border-slate-glow: rgba(0, 229, 255, 0.5);
+
+    --cyber-cyan: #00e5ff;
+    --neon-green: #00e676;
+    --neon-red: #ff1744;
+    --neon-gold: #ffd600;
+    --neon-magenta: #ff33ff;
+    --text-premium-white: #ffffff;
+    --text-silver-gray: #b0c4de;
+    --text-muted-dim: #64748b;
+}
+
+body {
+    background: fixed radial-gradient(circle at 50% 15%, #0a1626 0%, var(--bg-deep-obsidian) 85%) !important;
+    color: var(--text-premium-white) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    letter-spacing: 0.3px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep-obsidian);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-cyan);
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 22px 4px 6px;
+}
+
+.app-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.app-subtitle {
+    color: var(--text-silver-gray);
+    font-size: 13px;
+    margin: 4px 0 0;
+}
+
+.feed-badge {
+    font-family: 'SF Mono', Consolas, Menlo, monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-slate-glass);
+    background: rgba(4, 6, 10, 0.6);
+    color: var(--text-silver-gray);
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.card {
+    background: var(--bg-blur-card) !important;
+    backdrop-filter: blur(25px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+    border: 1px solid var(--border-slate-glass) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65) !important;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: smoothSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease !important;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px 0 rgba(0, 229, 255, 0.2) !important;
+    border-color: var(--border-slate-glow) !important;
+}
+
+.card-header {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%) !important;
+    border-bottom: 1px solid var(--border-slate-glass) !important;
+    color: var(--cyber-cyan) !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 16px 20px !important;
+    border-top-left-radius: 14px !important;
+    border-top-right-radius: 14px !important;
+}
+
+.card-body {
+    color: var(--text-premium-white) !important;
+}
+
+.card-body p {
+    color: var(--text-premium-white);
+}
+
+.card-body h5,
+.card-body h4 {
+    color: var(--text-silver-gray) !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 16px;
+    margin-bottom: 6px;
+}
+
+#project-status,
+.text-muted {
+    color: var(--text-silver-gray) !important;
+}
+
+/* ==========================================================================
+   Metric readouts
+   ========================================================================== */
+
+.metric-value,
+#connection-status,
+#last-update-time,
+#feed-source-status {
+    font-family: 'SF Mono', Consolas, Menlo, monospace !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    padding: 10px 14px;
+    background: rgba(4, 6, 10, 0.6) !important;
+    border-radius: 8px;
+    border-left: 4px solid var(--cyber-cyan);
+    margin-bottom: 14px;
+    display: block;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+#slippage-output {
+    border-left-color: var(--cyber-cyan);
+    color: var(--cyber-cyan) !important;
+}
+
+#fees-output {
+    border-left-color: var(--neon-gold);
+    color: var(--neon-gold) !important;
+}
+
+#market-impact-output {
+    border-left-color: var(--neon-red);
+    color: var(--neon-red) !important;
+}
+
+#net-cost-output {
+    border-left-color: #e040fb;
+    color: var(--neon-magenta) !important;
+    font-size: 18px !important;
+    background: rgba(224, 64, 251, 0.08) !important;
+    box-shadow: 0 0 15px rgba(224, 64, 251, 0.15);
+}
+
+#maker-taker-output {
+    border-left-color: var(--text-silver-gray);
+    color: var(--text-premium-white) !important;
+}
+
+#latency-output {
+    border-left-color: var(--neon-green);
+    color: var(--neon-green) !important;
+}
+
+/* Live market ticker strip */
+.ticker-metric {
+    text-align: center;
+    padding: 6px 4px;
+}
+
+.ticker-label {
+    display: block;
+    color: var(--text-muted-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.ticker-value {
+    display: block;
+    font-family: 'SF Mono', Consolas, Menlo, monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-premium-white);
+}
+
+.ticker-value.positive { color: var(--neon-green); }
+.ticker-value.negative { color: var(--neon-red); }
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes smoothSlideUp {
+    0% { opacity: 0; transform: translateY(22px) scale(0.97); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes telemetryPulseRadar {
+    0% { box-shadow: 0 0 0 0 rgba(0, 230, 114, 0.6); }
+    70% { box-shadow: 0 0 0 12px rgba(0, 230, 114, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 230, 114, 0); }
+}
+
+.live-status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--neon-green);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 12px;
+    animation: telemetryPulseRadar 2.4s infinite;
+}
+
+/* ==========================================================================
+   Form controls
+   ========================================================================== */
+
+input,
+.form-control {
+    background-color: rgba(4, 6, 10, 0.8) !important;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-slate-glass) !important;
+    color: var(--text-premium-white) !important;
+    border-radius: 6px !important;
+    height: 40px !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+input:focus,
+.form-control:focus {
+    border-color: var(--cyber-cyan) !important;
+    background-color: var(--bg-input-focus) !important;
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
+    outline: none;
+    color: #ffffff !important;
+}
+
+label {
+    color: var(--text-silver-gray) !important;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+}
+
+/* Dropdowns render on a white surface so option text stays legible against
+   the dark page background. */
+.card-body .Select,
+.card-body .Select div,
+.card-body .Select span,
+.card-body .Select input {
+    color: #0f172a !important;
+}
+
+.Select-control {
+    background-color: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 6px !important;
+    color: #000000 !important;
+    height: 40px !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.Select-control:hover,
+.is-focused > .Select-control {
+    border-color: var(--cyber-cyan) !important;
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
+}
+
+.Select-value-label,
+.Select-placeholder,
+.Select-input,
+.Select-input input,
+.Select-noresults,
+.Select-clear-zone,
+.Select-arrow-zone,
+.Select-menu-outer,
+.Select-menu-outer *,
+.Select-option,
+.VirtualizedSelectOption {
+    color: #000000 !important;
+}
+
+.Select-input input {
+    background: transparent !important;
+    box-shadow: none !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.Select-menu-outer,
+.Select-menu,
+.Select-option,
+.VirtualizedSelectOption {
+    background-color: #ffffff !important;
+}
+
+.Select-option.is-focused,
+.VirtualizedSelectFocusedOption {
+    background-color: #e2e8f0 !important;
+    color: #000000 !important;
+}
+
+.Select-option.is-selected {
+    background-color: #cbd5e1 !important;
+    color: #000000 !important;
+}
+
+.Select-placeholder {
+    color: #475569 !important;
+}
+
+.Select-arrow {
+    border-top-color: #0f172a !important;
+}
+
+.is-open > .Select-control .Select-arrow {
+    border-bottom-color: #0f172a !important;
+    border-top-color: transparent !important;
+}
+
+.rc-slider-mark-text {
+    color: var(--text-silver-gray) !important;
+}
+
+.rc-slider-track {
+    background-color: var(--cyber-cyan) !important;
+}
+
+.rc-slider-dot-active,
+.rc-slider-handle {
+    border-color: var(--cyber-cyan) !important;
+}
+
+/* ==========================================================================
+   Simulation history table
+   ========================================================================== */
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'SF Mono', Consolas, Menlo, monospace;
+    font-size: 12px;
+}
+
+.history-table th {
+    text-align: left;
+    color: var(--text-muted-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 11px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-slate-glass);
+}
+
+.history-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-premium-white);
+}
+
+.history-table tr:hover td {
+    background: rgba(0, 229, 255, 0.06);
+}
+
+.bid-row-update {
+    color: var(--neon-green) !important;
+    font-family: 'SF Mono', monospace;
+    font-weight: 600;
+}
+
+.ask-row-update {
+    color: var(--neon-red) !important;
+    font-family: 'SF Mono', monospace;
+    font-weight: 600;
+}

@@ -1,17 +1,11 @@
 """
 Orderbook data structure for processing and analyzing L2 market data.
 """
-import time
-import numpy as np
-import pandas as pd
-from typing import Dict, List, Tuple, Optional
 import logging
+import time
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+import pandas as pd
+
 logger = logging.getLogger(__name__)
 
 class Orderbook:
@@ -34,7 +28,7 @@ class Orderbook:
         self.last_update_time = 0
         self.processing_times = []  # Track processing times for performance metrics
 
-    def update(self, data: Dict) -> float:
+    def update(self, data: dict) -> float:
         """
         Update the orderbook with new data.
 
@@ -68,7 +62,7 @@ class Orderbook:
 
         return processing_time
 
-    def get_mid_price(self) -> Optional[float]:
+    def get_mid_price(self) -> float | None:
         """
         Calculate the mid price (average of best bid and best ask).
 
@@ -82,7 +76,7 @@ class Orderbook:
         best_bid = self.bids[0][0]
         return (best_ask + best_bid) / 2
 
-    def get_spread(self) -> Optional[float]:
+    def get_spread(self) -> float | None:
         """
         Calculate the spread (difference between best ask and best bid).
 
@@ -96,7 +90,7 @@ class Orderbook:
         best_bid = self.bids[0][0]
         return best_ask - best_bid
 
-    def get_spread_percentage(self) -> Optional[float]:
+    def get_spread_percentage(self) -> float | None:
         """
         Calculate the spread as a percentage of the mid price.
 
@@ -160,7 +154,7 @@ class Orderbook:
 
         return volume
 
-    def get_price_for_volume(self, side: str, volume: float) -> Optional[float]:
+    def get_price_for_volume(self, side: str, volume: float) -> float | None:
         """
         Get the price needed to fill a specific volume.
 
@@ -186,7 +180,7 @@ class Orderbook:
 
         return None  # Not enough volume in the orderbook
 
-    def get_orderbook_imbalance(self) -> Optional[float]:
+    def get_orderbook_imbalance(self) -> float | None:
         """
         Calculate the orderbook imbalance (bid volume - ask volume) / (bid volume + ask volume).
 
@@ -216,7 +210,7 @@ class Orderbook:
 
         return sum(self.processing_times) / len(self.processing_times)
 
-    def to_dataframe(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def to_dataframe(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Convert the orderbook to pandas DataFrames.
 

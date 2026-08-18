@@ -1,0 +1,47 @@
+[project]
+name = "algo-trade-simulator"
+version = "1.0.0"
+description = "Real-time transaction cost simulator for crypto and equity market orders"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+exclude = [
+    ".venv",
+    "build",
+    "dist",
+    # Scaffolded but never wired into the app, and not tracked in git. Excluded so
+    # unfinished work does not gate linting; delete or integrate them deliberately.
+    "trading/src/models/user_account.py",
+    "trading/src/models/option_chain.py",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "UP",   # pyupgrade
+    "SIM",  # simplify
+]
+ignore = [
+    "E501",    # line length is handled by the formatter
+    "B008",    # Depends()-style default calls are not used here
+    "SIM108",  # ternaries are not always clearer
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Demo scripts intentionally print to stdout and build unused figure handles.
+"trading/examples/*" = ["T201", "F841"]
+
+[tool.pytest.ini_options]
+testpaths = ["trading/tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

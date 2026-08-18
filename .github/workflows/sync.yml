@@ -1,4 +1,5 @@
 name: Sync to Hugging Face
+
 on:
   push:
     branches: [main]
@@ -8,11 +9,32 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
+      - name: Check whether Hugging Face sync is configured
+        id: config
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Skip silently rather than failing the run for anyone who has not set
+          # up a Space. Primary deployment is Railway (see README).
+          if [ -z "$HF_TOKEN" ] || [ -z "${{ vars.HF_SPACE }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "HF_TOKEN or HF_SPACE is not set; skipping Hugging Face sync."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.config.outputs.configured == 'true'
         with:
           fetch-depth: 0
           lfs: true
+
       - name: Push to Hugging Face
+        if: steps.config.outputs.configured == 'true'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://saurav190:$HF_TOKEN@huggingface.co/spaces/saurav190/algo-trade-simulator main
+          HF_SPACE: ${{ vars.HF_SPACE }}
+          HF_USERNAME: ${{ vars.HF_USERNAME }}
+        run: |
+          git push --force \
+            "https://${HF_USERNAME}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" main
