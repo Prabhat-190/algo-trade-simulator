@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11 matches the container image; 3.12 guards against upcoming runtimes.
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest -q
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: algo-trade-simulator:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify the container serves market data
+        run: |
+          docker run -d --name sim -p 8080:8080 -e PORT=8080 algo-trade-simulator:ci
+
+          # The embedded feed must populate the book with no Redis and no API keys.
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/readyz > /dev/null 2>&1; then
+              echo "Container is ready after ${attempt} attempt(s)"
+              curl -fsS http://127.0.0.1:8080/healthz
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Container never became ready. Logs:"
+          docker logs sim
+          exit 1
+
+      - name: Container logs on failure
+        if: failure()
+        run: docker logs sim || true

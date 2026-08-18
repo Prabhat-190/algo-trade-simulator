@@ -1,57 +1,22 @@
+# Railway deployment config.
+#
+# This deploys as a SINGLE service with no add-ons required. The dashboard runs
+# its own embedded market data feed (FEED_SOURCE=auto), so there is nothing else
+# to provision to get a working URL.
+#
+# Optional upgrades, both described in the README:
+#   * Add a Railway Redis database to share saved projects across replicas.
+#   * Add a second service running `python -m trading.data_feeder` for live
+#     exchange data; the dashboard prefers it automatically over the embedded feed.
+
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
+startCommand = "gunicorn --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2} --worker-class gthread --threads ${GUNICORN_THREADS:-4} --timeout 120 --graceful-timeout 30 --access-logfile - --error-logfile - trading.src.main:server"
 healthcheckPath = "/healthz"
-healthcheckTimeout = 300
+healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-
-# NOTE: Railway does not support multi-service definitions in a single railway.toml.
-# Each service (web_dashboard, data_feeder, stock_data_feeder, nginx) must be created
-# separately in the Railway dashboard, each pointing to this repository with appropriate:
-# - Build: Dockerfile (same for all)
-# - Start Command: varies by service (see below)
-# - Environment Variables: varies by service (see below)
-#
-# SERVICE DEFINITIONS FOR RAILWAY DASHBOARD:
-#
-# 1. WEB DASHBOARD SERVICE
-#    - Build: Dockerfile
-#    - Start Command: gunicorn -b 0.0.0.0:$PORT --workers $WEB_CONCURRENCY --worker-class gthread --threads $GUNICORN_THREADS --timeout 120 trading.src.main:server
-#    - Variables:
-#      PORT=7860
-#      WEB_CONCURRENCY=2
-#      GUNICORN_THREADS=4
-#      REDIS_HOST=${{REDIS_HOST}}
-#      REDIS_PORT=${{REDIS_PORT}}
-#      MODELS_DIR=/app/models
-#
-# 2. DATA FEEDER SERVICE
-#    - Build: Dockerfile
-#    - Start Command: python trading/data_feeder.py
-#    - Variables:
-#      REDIS_HOST=${{REDIS_HOST}}
-#      REDIS_PORT=${{REDIS_PORT}}
-#      WEBSOCKET_URI=${{WEBSOCKET_URI}}
-#
-# 3. STOCK DATA FEEDER SERVICE (optional)
-#    - Build: Dockerfile
-#    - Start Command: python trading/stock_data_feeder.py
-#    - Variables:
-#      REDIS_HOST=${{REDIS_HOST}}
-#      REDIS_PORT=${{REDIS_PORT}}
-#      STOCK_SYMBOL=${{STOCK_SYMBOL:-AAPL}}
-#      STOCK_PROVIDER=${{STOCK_PROVIDER:-finnhub}}
-#      STOCK_POLL_INTERVAL=${{STOCK_POLL_INTERVAL:-15}}
-#      FINNHUB_API_KEY=${{FINNHUB_API_KEY}}
-#      ALPHA_VANTAGE_API_KEY=${{ALPHA_VANTAGE_API_KEY}}
-#
-# 4. NGINX SERVICE (optional - Railway provides load balancing)
-#    - Build: Dockerfile (or use nginx:alpine with custom config)
-#    - Note: Railway's built-in load balancing may replace the need for separate nginx
-#    - If using custom nginx: create separate service with nginx config
-#
-# REDIS: Add a Redis service in Railway dashboard, then reference its
-# internal host/port via REDIS_HOST/REDIS_PORT variables above.
+numReplicas = 1

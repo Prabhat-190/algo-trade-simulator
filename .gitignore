@@ -136,8 +136,8 @@ dmypy.json
 .LSOverride
 Thumbs.db
 
-# Docker
-.dockerignore
+# Tooling caches
+.ruff_cache/
 
 # Local development
 *.local
