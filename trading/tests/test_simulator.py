@@ -1,161 +1,100 @@
-"""
-Tests for the trade simulator.
-"""
-import unittest
-import json
+"""Tests for the trade simulator's cost estimation."""
+from __future__ import annotations
 
-from src.models.simulator import TradeSimulator
-from src.data.orderbook import Orderbook
-from src.models.slippage_model import SlippageModel
-from src.models.market_impact import AlmgrenChrissModel
-from src.models.maker_taker import MakerTakerModel
-from src.models.fee_model import FeeModel
+import pytest
 
-class TestSimulator(unittest.TestCase):
-    """
-    Tests for the trade simulator.
-    """
-    def setUp(self):
-        """
-        Set up the test.
-        """
-        self.simulator = TradeSimulator()
-        
-        # Create sample orderbook data
-        self.sample_data = {
-            'timestamp': '2023-05-04T10:39:13Z',
-            'exchange': 'OKX',
-            'symbol': 'BTC-USDT-SWAP',
-            'asks': [
-                ['45000.5', '1.5'],
-                ['45001.0', '2.0'],
-                ['45002.0', '3.0'],
-                ['45003.0', '4.0'],
-                ['45004.0', '5.0']
-            ],
-            'bids': [
-                ['44999.5', '1.0'],
-                ['44999.0', '2.0'],
-                ['44998.0', '3.0'],
-                ['44997.0', '4.0'],
-                ['44996.0', '5.0']
-            ]
-        }
-        
-    def test_update_orderbook(self):
-        """
-        Test updating the orderbook.
-        """
-        # Update the orderbook
-        processing_time = self.simulator.update_orderbook(self.sample_data)
-        
-        # Check that the orderbook was updated
-        self.assertEqual(self.simulator.orderbook.exchange, 'OKX')
-        self.assertEqual(self.simulator.orderbook.symbol, 'BTC-USDT-SWAP')
-        self.assertEqual(len(self.simulator.orderbook.asks), 5)
-        self.assertEqual(len(self.simulator.orderbook.bids), 5)
-        
-        # Check that the processing time is reasonable
-        self.assertGreater(processing_time, 0)
-        
-    def test_simulate_market_order(self):
-        """
-        Test simulating a market order.
-        """
-        # Update the orderbook first
-        self.simulator.update_orderbook(self.sample_data)
-        
-        # Simulate a market order
-        result = self.simulator.simulate_market_order(
-            side='buy',
-            quantity=0.1,  # 0.1 BTC
-            exchange='OKX',
-            market_type='spot',
-            fee_tier='VIP0',
-            volatility=0.01
-        )
-        
-        # Check that the result contains the expected keys
-        expected_keys = [
-            'timestamp', 'exchange', 'symbol', 'side', 'quantity',
-            'mid_price', 'execution_price', 'order_value',
-            'maker_proportion', 'fees', 'slippage', 'slippage_percentage',
-            'market_impact', 'market_impact_percentage',
-            'net_cost', 'net_cost_percentage', 'processing_time'
-        ]
-        
-        for key in expected_keys:
-            self.assertIn(key, result)
-            
-        # Check that the values are reasonable
-        self.assertEqual(result['side'], 'buy')
-        self.assertEqual(result['quantity'], 0.1)
-        self.assertEqual(result['exchange'], 'OKX')
-        
-        # Mid price should be the average of best bid and best ask
-        expected_mid_price = (45000.5 + 44999.5) / 2
-        self.assertAlmostEqual(result['mid_price'], expected_mid_price)
-        
-        # Order value should be quantity * mid price
-        expected_order_value = 0.1 * expected_mid_price
-        self.assertAlmostEqual(result['order_value'], expected_order_value)
-        
-        # Fees should be positive
-        self.assertGreater(result['fees']['total_fee'], 0)
-        
-        # Slippage should be non-negative for a buy order
-        self.assertGreaterEqual(result['slippage'], 0)
-        
-        # Market impact should be positive
-        self.assertGreater(result['market_impact']['total_impact'], 0)
-        
-        # Net cost should be the sum of fees, slippage, and market impact
-        expected_net_cost = (
-            result['fees']['total_fee'] + 
-            result['slippage'] + 
-            result['market_impact']['total_impact']
-        )
-        self.assertAlmostEqual(result['net_cost'], expected_net_cost)
-        
-        # Processing time should be reasonable
-        self.assertGreater(result['processing_time'], 0)
-        
-    def test_orderbook_methods(self):
-        """
-        Test orderbook methods.
-        """
-        # Update the orderbook
-        self.simulator.update_orderbook(self.sample_data)
-        
-        # Test mid price
-        expected_mid_price = (45000.5 + 44999.5) / 2
-        self.assertAlmostEqual(self.simulator.orderbook.get_mid_price(), expected_mid_price)
-        
-        # Test spread
-        expected_spread = 45000.5 - 44999.5
-        self.assertAlmostEqual(self.simulator.orderbook.get_spread(), expected_spread)
-        
-        # Test spread percentage
-        expected_spread_percentage = (expected_spread / expected_mid_price) * 100
-        self.assertAlmostEqual(self.simulator.orderbook.get_spread_percentage(), expected_spread_percentage)
-        
-        # Test volume at price
-        self.assertAlmostEqual(self.simulator.orderbook.get_volume_at_price('ask', 45000.5), 1.5)
-        self.assertAlmostEqual(self.simulator.orderbook.get_volume_at_price('bid', 44999.5), 1.0)
-        
-        # Test volume up to price
-        self.assertAlmostEqual(self.simulator.orderbook.get_volume_up_to_price('ask', 45002.0), 1.5 + 2.0 + 3.0)
-        self.assertAlmostEqual(self.simulator.orderbook.get_volume_up_to_price('bid', 44998.0), 1.0 + 2.0 + 3.0)
-        
-        # Test price for volume
-        self.assertAlmostEqual(self.simulator.orderbook.get_price_for_volume('ask', 2.0), 45001.0)
-        self.assertAlmostEqual(self.simulator.orderbook.get_price_for_volume('bid', 2.0), 44999.0)
-        
-        # Test orderbook imbalance
-        total_bid_volume = 1.0 + 2.0 + 3.0 + 4.0 + 5.0
-        total_ask_volume = 1.5 + 2.0 + 3.0 + 4.0 + 5.0
-        expected_imbalance = (total_bid_volume - total_ask_volume) / (total_bid_volume + total_ask_volume)
-        self.assertAlmostEqual(self.simulator.orderbook.get_orderbook_imbalance(), expected_imbalance)
-        
-if __name__ == '__main__':
-    unittest.main()
+from trading.tests.conftest import EXPECTED_MID_PRICE
+
+RESULT_KEYS = (
+    "timestamp", "exchange", "symbol", "side", "quantity",
+    "mid_price", "execution_price", "order_value",
+    "maker_proportion", "fees", "slippage", "slippage_percentage",
+    "market_impact", "market_impact_percentage",
+    "net_cost", "net_cost_percentage", "processing_time",
+)
+
+
+def test_update_orderbook_populates_book(simulator, sample_orderbook):
+    processing_time = simulator.update_orderbook(sample_orderbook)
+
+    assert simulator.orderbook.exchange == "OKX"
+    assert simulator.orderbook.symbol == "BTC-USDT-SWAP"
+    assert len(simulator.orderbook.asks) == 5
+    assert len(simulator.orderbook.bids) == 5
+    assert processing_time > 0
+
+
+def test_simulate_market_order_returns_all_fields(loaded_simulator):
+    result = loaded_simulator.simulate_market_order(side="buy", quantity=0.1)
+
+    for key in RESULT_KEYS:
+        assert key in result
+
+    assert result["side"] == "buy"
+    assert result["quantity"] == 0.1
+    assert result["mid_price"] == pytest.approx(EXPECTED_MID_PRICE)
+    assert result["order_value"] == pytest.approx(0.1 * EXPECTED_MID_PRICE)
+
+
+def test_net_cost_is_sum_of_components(loaded_simulator):
+    result = loaded_simulator.simulate_market_order(side="buy", quantity=0.1)
+
+    expected = (
+        result["fees"]["total_fee"]
+        + result["slippage"]
+        + result["market_impact"]["total_impact"]
+    )
+    assert result["net_cost"] == pytest.approx(expected)
+    assert result["fees"]["total_fee"] > 0
+    assert result["slippage"] >= 0
+    assert result["market_impact"]["total_impact"] > 0
+
+
+def test_empty_orderbook_reports_error(simulator):
+    assert simulator.simulate_market_order(side="buy", quantity=1.0)["error"] == "Orderbook is empty"
+
+
+@pytest.mark.parametrize("quantity", [0, -1, None])
+def test_non_positive_quantity_rejected(loaded_simulator, quantity):
+    result = loaded_simulator.simulate_market_order(side="buy", quantity=quantity)
+    assert result == {"error": "Quantity must be greater than zero"}
+
+
+def test_unknown_side_rejected(loaded_simulator):
+    result = loaded_simulator.simulate_market_order(side="hodl", quantity=1.0)
+    assert "Unknown order side" in result["error"]
+
+
+def test_cost_grows_with_order_size(loaded_simulator):
+    """Slippage and impact must scale with size, not sit at a flat notional %."""
+    small = loaded_simulator.simulate_market_order(side="buy", quantity=0.001)
+    large = loaded_simulator.simulate_market_order(side="buy", quantity=1.0)
+
+    assert large["slippage"] > small["slippage"]
+    assert large["market_impact"]["total_impact"] > small["market_impact"]["total_impact"]
+    # A bigger order is worse per dollar traded, not merely worse in absolute terms.
+    assert large["net_cost_percentage"] > small["net_cost_percentage"]
+
+
+def test_small_order_cost_is_dominated_by_fees(loaded_simulator):
+    """A tiny order should cost roughly the fee rate, not several percent."""
+    result = loaded_simulator.simulate_market_order(side="buy", quantity=0.0001)
+
+    assert result["net_cost_percentage"] < 0.5
+    assert result["fees"]["total_fee"] > result["market_impact"]["total_impact"]
+
+
+def test_anomalous_book_is_flagged(simulator):
+    simulator.update_orderbook({
+        "timestamp": "now", "exchange": "OKX", "symbol": "X",
+        "asks": [["100.0", "0.0001"]],
+        "bids": [["99.0", "1000.0"]],
+    })
+    result = simulator.simulate_market_order(side="buy", quantity=0.1)
+    assert result["anomaly_flag"] is True
+
+
+def test_average_processing_time_tracks_updates(simulator, sample_orderbook):
+    assert simulator.get_average_processing_time() == 0
+    simulator.update_orderbook(sample_orderbook)
+    assert simulator.get_average_processing_time() > 0

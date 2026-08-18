@@ -1,16 +1,10 @@
 """
 Market impact model based on Almgren-Chriss model.
 """
-import numpy as np
-import pandas as pd
-from typing import Dict, List, Tuple, Optional
 import logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+import numpy as np
+
 logger = logging.getLogger(__name__)
 
 class AlmgrenChrissModel:
@@ -27,18 +21,18 @@ class AlmgrenChrissModel:
     - Almgren, R., & Chriss, N. (2001). Optimal execution of portfolio transactions.
     """
     def __init__(self,
-                 temporary_impact_factor: float = 0.1,
-                 permanent_impact_factor: float = 0.01,
+                 temporary_impact_factor: float = 1.0,
+                 permanent_impact_factor: float = 0.5,
                  market_vol_factor: float = 0.5,
-                 risk_aversion: float = 0.001):
+                 risk_aversion: float = 1.0):
         """
         Initialize the Almgren-Chriss market impact model.
 
         Args:
-            temporary_impact_factor: Factor γ for temporary impact calculation
-            permanent_impact_factor: Factor η for permanent impact calculation
-            market_vol_factor: Factor for incorporating market volatility
-            risk_aversion: Risk aversion parameter ψ that reflects trader's tolerance for execution risk
+            temporary_impact_factor: Coefficient Y in the square-root impact law
+            permanent_impact_factor: Coefficient η on the linear permanent term
+            market_vol_factor: Additional sensitivity to market volatility
+            risk_aversion: Risk aversion ψ reflecting tolerance for execution risk
         """
         self.temporary_impact_factor = temporary_impact_factor
         self.permanent_impact_factor = permanent_impact_factor
@@ -51,7 +45,7 @@ class AlmgrenChrissModel:
                                volatility: float,
                                mid_price: float,
                                orderbook_depth: float,
-                               execution_time: float = 1.0) -> Dict[str, float]:
+                               execution_time: float = 1.0) -> dict[str, float]:
         """
         Calculate market impact for a market order using the Almgren-Chriss model.
 
@@ -64,68 +58,63 @@ class AlmgrenChrissModel:
             execution_time: Time horizon for execution (in hours)
 
         Returns:
-            Dict: Dictionary with temporary, permanent, execution risk, and total impact
+            Dict: Dictionary with temporary, permanent, execution risk, and total impact,
+                all as absolute costs in quote currency
+
+        Notes:
+            Impact is driven by the *participation rate* (order size relative to
+            average daily volume), not by notional value. A model proportional to
+            notional alone would report the same percentage cost for a $100 order
+            as for a $10M order, which is not how impact behaves.
         """
-        # We'll use the normalized order size for additional adjustments
-        # This helps account for the relative size of the order compared to typical volume
-        normalized_size = order_size / avg_daily_volume if avg_daily_volume > 0 else 0
+        order_value = mid_price * order_size
+        if order_value <= 0:
+            return {
+                'temporary_impact': 0.0,
+                'permanent_impact': 0.0,
+                'execution_risk': 0.0,
+                'total_impact': 0.0,
+            }
 
-        # Calculate temporary impact (immediate price change)
-        # Temporary impact formula: γ × t (where t is trading rate)
-        trading_rate = order_size / execution_time
+        participation = order_size / avg_daily_volume if avg_daily_volume > 0 else 0.0
 
-        # Apply a scaling factor based on normalized size
-        size_scaling = np.sqrt(normalized_size) if normalized_size > 0 else 1.0
-
-        temporary_impact = (
-            self.temporary_impact_factor *
-            mid_price *
-            trading_rate *
-            size_scaling *
-            (1 + self.market_vol_factor * volatility)
+        # Temporary impact follows the empirical square-root law:
+        # Δp/p ≈ Y × σ × sqrt(Q / V). It reverts after the trade completes.
+        temporary_fraction = (
+            self.temporary_impact_factor
+            * volatility
+            * np.sqrt(participation)
+            * (1 + self.market_vol_factor * volatility)
         )
 
-        # Calculate permanent impact (lasting price change)
-        # Permanent impact formula: η × X (where X is total order size)
-        permanent_impact = (
-            self.permanent_impact_factor *
-            mid_price *
-            order_size
-        )
-
-        # Calculate execution risk
-        # Execution risk formula: 0.5 × ψ × σ² × T × X²
-        execution_risk = (
-            0.5 *
-            self.risk_aversion *
-            (volatility ** 2) *
-            execution_time *
-            (order_size ** 2)
-        )
-
-        # Adjust for orderbook depth
-        # Deeper orderbooks reduce market impact
-        depth_adjustment = 1.0
+        # Consuming a large share of the visible book costs more than the daily
+        # volume ratio alone implies, so widen by a bounded depth penalty.
         if orderbook_depth > 0:
-            depth_ratio = order_size / orderbook_depth
-            depth_adjustment = 1.0 + np.tanh(depth_ratio)  # Smooth function that approaches 2 for large orders
+            temporary_fraction *= 1.0 + np.tanh(order_size / orderbook_depth)
 
-        temporary_impact *= depth_adjustment
+        # Permanent impact is linear in participation and does not revert.
+        permanent_fraction = self.permanent_impact_factor * volatility * participation
 
-        # Total impact is the sum of temporary and permanent impacts plus execution risk
-        total_impact = temporary_impact + permanent_impact + execution_risk
+        temporary_impact = temporary_fraction * order_value
+        permanent_impact = permanent_fraction * order_value
+
+        # Execution risk: variance of the unexecuted position over the horizon,
+        # scaled by risk aversion (0.5 × ψ × σ² × T × value).
+        execution_risk = (
+            0.5 * self.risk_aversion * (volatility ** 2) * execution_time * order_value
+        )
 
         return {
             'temporary_impact': temporary_impact,
             'permanent_impact': permanent_impact,
             'execution_risk': execution_risk,
-            'total_impact': total_impact
+            'total_impact': temporary_impact + permanent_impact + execution_risk,
         }
 
     def calculate_optimal_execution_schedule(self,
                                            total_size: float,
                                            time_horizon: float,
-                                           volatility: float) -> Tuple[np.ndarray, np.ndarray]:
+                                           volatility: float) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate optimal execution schedule based on Almgren-Chriss model.
 

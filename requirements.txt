@@ -1,11 +1,21 @@
-websockets>=10.0
-pandas>=1.3.0
-numpy>=1.20.0
-matplotlib>=3.4.0
-dash>=2.0.0
-dash-bootstrap-components>=1.0.0
-plotly>=5.0.0
-scikit-learn>=1.0.0
-gunicorn
-redis>=4.0.0
-joblib>=1.1.0
+# Runtime dependencies for the dashboard and the feeder services.
+# Upper bounds pin the tested major versions so a deploy cannot break on an
+# unrelated upstream release.
+
+# Web UI
+dash>=3.0,<5
+dash-bootstrap-components>=2.0,<3
+plotly>=6.0,<7
+
+# WSGI server used in the container
+gunicorn>=22.0,<27
+
+# Data handling and cost models
+pandas>=2.2,<4
+numpy>=1.26,<3
+scikit-learn>=1.4,<2
+joblib>=1.3,<2
+
+# Market data transport
+redis>=5.0,<9
+websockets>=12.0,<18
