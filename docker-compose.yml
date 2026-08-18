@@ -12,8 +12,8 @@ services:
       - "8080:8080"
     environment:
       PORT: 8080
-      WEB_CONCURRENCY: 2
-      GUNICORN_THREADS: 4
+      WEB_CONCURRENCY: 1
+      GUNICORN_THREADS: 8
       LOG_LEVEL: INFO
       # "auto" consumes Redis when a feeder is publishing and falls back to the
       # embedded synthetic feed otherwise, so this works with or without profiles.

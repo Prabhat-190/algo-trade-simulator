@@ -283,93 +283,117 @@ label {
     margin-bottom: 6px;
 }
 
-/* Dropdowns render on a white surface so option text stays legible against
-   the dark page background. */
-.card-body .Select,
-.card-body .Select div,
-.card-body .Select span,
-.card-body .Select input {
-    color: #0f172a !important;
-}
+/* Dropdowns.
+   Dash 4 rebuilt dcc.Dropdown on Radix, so the react-select class names
+   (.Select-control, .Select-menu-outer, .VirtualizedSelectOption) that older
+   guides suggest no longer exist and styling them silently does nothing.
+   The class names below are the ones Dash 4 actually renders.
 
-.Select-control {
-    background-color: #ffffff !important;
-    border: 1px solid #94a3b8 !important;
+   These rules are deliberately NOT scoped under .card-body: the open menu is
+   portalled to the end of <body>, so a descendant selector would never match. */
+.dash-dropdown,
+.dash-dropdown-trigger {
+    background-color: rgba(9, 15, 26, 0.92) !important;
+    border: 1px solid rgba(176, 196, 222, 0.35) !important;
     border-radius: 6px !important;
-    color: #000000 !important;
-    height: 40px !important;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    color: var(--text-premium-white) !important;
+    min-height: 40px !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-.Select-control:hover,
-.is-focused > .Select-control {
+.dash-dropdown:hover,
+.dash-dropdown-trigger:hover,
+.dash-dropdown[data-state="open"],
+.dash-dropdown:focus-within {
     border-color: var(--cyber-cyan) !important;
     box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
 }
 
-.Select-value-label,
-.Select-placeholder,
-.Select-input,
-.Select-input input,
-.Select-noresults,
-.Select-clear-zone,
-.Select-arrow-zone,
-.Select-menu-outer,
-.Select-menu-outer *,
-.Select-option,
-.VirtualizedSelectOption {
-    color: #000000 !important;
+.dash-dropdown-value,
+.dash-dropdown-value-item,
+.dash-dropdown-value-count,
+.dash-dropdown-trigger-icon,
+.dash-dropdown-search-icon {
+    color: var(--text-premium-white) !important;
 }
 
-.Select-input input {
-    background: transparent !important;
-    box-shadow: none !important;
-    height: auto !important;
-    padding: 0 !important;
+.dash-dropdown-placeholder {
+    color: var(--text-muted-dim) !important;
 }
 
-.Select-menu-outer,
-.Select-menu,
-.Select-option,
-.VirtualizedSelectOption {
-    background-color: #ffffff !important;
+/* The search box the user types into. Left unstyled it inherits a dark colour
+   on a dark surface, which is invisible. */
+.dash-dropdown-search,
+.dash-dropdown-search input,
+.dash-dropdown-search-container input {
+    background-color: rgba(4, 6, 10, 0.85) !important;
+    border: 1px solid rgba(176, 196, 222, 0.25) !important;
+    border-radius: 4px !important;
+    caret-color: var(--cyber-cyan) !important;
+    color: var(--text-premium-white) !important;
 }
 
-.Select-option.is-focused,
-.VirtualizedSelectFocusedOption {
-    background-color: #e2e8f0 !important;
-    color: #000000 !important;
+.dash-dropdown-search::placeholder,
+.dash-dropdown-search input::placeholder {
+    color: var(--text-muted-dim) !important;
 }
 
-.Select-option.is-selected {
-    background-color: #cbd5e1 !important;
-    color: #000000 !important;
+/* Portalled menu surface. */
+.dash-dropdown-content,
+.dash-dropdown-options,
+.dash-dropdown-grid-container {
+    background-color: rgba(9, 15, 26, 0.98) !important;
+    border: 1px solid rgba(176, 196, 222, 0.3) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65) !important;
+    color: var(--text-premium-white) !important;
 }
 
-.Select-placeholder {
-    color: #475569 !important;
+.dash-dropdown-option {
+    color: var(--text-premium-white) !important;
 }
 
-.Select-arrow {
-    border-top-color: #0f172a !important;
+.dash-dropdown-option:hover,
+.dash-dropdown-option[data-highlighted],
+.dash-dropdown-option[data-state="checked"] {
+    background-color: rgba(0, 229, 255, 0.18) !important;
+    color: var(--text-premium-white) !important;
 }
 
-.is-open > .Select-control .Select-arrow {
-    border-bottom-color: #0f172a !important;
-    border-top-color: transparent !important;
+.dash-dropdown-actions,
+.dash-dropdown-action-button,
+.dash-dropdown-clear {
+    color: var(--cyber-cyan) !important;
 }
 
-.rc-slider-mark-text {
+/* Sliders. As with the dropdown, Dash 4 replaced rc-slider, so the .rc-slider-*
+   names older guides use are inert. These are the names Dash 4 emits. */
+.dash-slider-mark {
     color: var(--text-silver-gray) !important;
 }
 
-.rc-slider-track {
+.dash-slider-track {
+    background-color: rgba(176, 196, 222, 0.25) !important;
+}
+
+.dash-slider-range {
     background-color: var(--cyber-cyan) !important;
 }
 
-.rc-slider-dot-active,
-.rc-slider-handle {
-    border-color: var(--cyber-cyan) !important;
+.dash-slider-thumb {
+    background-color: var(--bg-deep-obsidian) !important;
+    border: 2px solid var(--cyber-cyan) !important;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.5) !important;
+}
+
+.dash-slider-dot {
+    background-color: rgba(176, 196, 222, 0.35) !important;
+    border-color: rgba(176, 196, 222, 0.35) !important;
+}
+
+.dash-slider-tooltip {
+    background-color: rgba(9, 15, 26, 0.98) !important;
+    color: var(--text-premium-white) !important;
 }
 
 /* ==========================================================================
