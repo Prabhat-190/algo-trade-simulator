@@ -25,6 +25,7 @@ def clean_env(monkeypatch):
         "SYNTHETIC_DEPTH", "SYNTHETIC_SPREAD_BPS",
         "STOCK_SYMBOL", "STOCK_PROVIDER", "STOCK_POLL_INTERVAL",
         "FINNHUB_API_KEY", "ALPHA_VANTAGE_API_KEY",
+        "RAILWAY_ENVIRONMENT", "RAILWAY_PROJECT_ID",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -90,6 +91,20 @@ def test_redis_port_alone_does_not_enable_redis(monkeypatch):
     """A stray REDIS_PORT should not trigger connection attempts on localhost."""
     monkeypatch.setenv("REDIS_PORT", "6379")
     assert RedisSettings.from_env().configured is False
+
+
+def test_railway_ignores_localhost_redis_host(monkeypatch):
+    """Leftover REDIS_HOST=localhost on Railway must not block startup."""
+    monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+    monkeypatch.setenv("REDIS_HOST", "localhost")
+    settings = RedisSettings.from_env()
+    assert settings.configured is False
+
+
+def test_railway_still_uses_a_real_redis_host(monkeypatch):
+    monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+    monkeypatch.setenv("REDIS_HOST", "redis.internal")
+    assert RedisSettings.from_env().configured is True
 
 
 def test_redis_url_is_parsed(monkeypatch):

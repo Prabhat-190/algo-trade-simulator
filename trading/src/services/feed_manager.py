@@ -53,18 +53,17 @@ class FeedManager:
 
         if source in (FEED_AUTO, FEED_REDIS) and self.redis_client is not None:
             self._spawn("redis-subscriber", self._run_redis_subscriber)
-        elif source == FEED_REDIS:
-            logger.warning("FEED_SOURCE=redis but Redis is unavailable; no data will arrive.")
 
         if source == FEED_WEBSOCKET:
             self._spawn("websocket-feed", self._run_websocket)
-        elif source == FEED_SYNTHETIC:
-            self._spawn("synthetic-feed", lambda: self._run_synthetic(only_when_stale=False))
-        elif source == FEED_AUTO:
-            self._spawn("synthetic-fallback", lambda: self._run_synthetic(only_when_stale=True))
 
-        if not self._threads:
-            logger.warning("No market data source started for FEED_SOURCE=%s", source)
+        # Always keep an in-process book so a one-service Railway deploy is never
+        # stuck on "Waiting for orderbook data". Real frames still win: the
+        # generator stands down while redis/websocket is producing.
+        if source == FEED_SYNTHETIC:
+            self._spawn("synthetic-feed", lambda: self._run_synthetic(only_when_stale=False))
+        else:
+            self._spawn("synthetic-fallback", lambda: self._run_synthetic(only_when_stale=True))
 
     def stop(self) -> None:
         self._stop.set()
