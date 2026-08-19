@@ -84,14 +84,25 @@ class RedisSettings:
                 configured=True,
             )
 
+        host = _env_str("REDIS_HOST", "localhost")
+        # Railway injects RAILWAY_ENVIRONMENT. A leftover REDIS_HOST=localhost from
+        # an old .env copy cannot succeed there and delayed health checks enough
+        # to keep production on the previous (empty-orderbook) deploy.
+        on_railway = bool(
+            os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_PROJECT_ID")
+        )
+        configured = bool(os.environ.get("REDIS_HOST"))
+        if on_railway and host in {"localhost", "127.0.0.1"}:
+            configured = False
+
         return cls(
-            host=_env_str("REDIS_HOST", "localhost"),
+            host=host,
             port=_env_int("REDIS_PORT", 6379),
             password=os.environ.get("REDIS_PASSWORD") or None,
             db=_env_int("REDIS_DB", 0),
             connect_timeout=timeout,
             max_retries=retries,
-            configured=bool(os.environ.get("REDIS_HOST")),
+            configured=configured,
         )
 
 

@@ -104,17 +104,20 @@ def test_auto_fallback_yields_to_a_real_source(feed_settings, collected):
         manager.stop()
 
 
-def test_redis_source_without_client_starts_nothing(feed_settings, collected):
-    settings = FeedSettings(**{**feed_settings.__dict__, "source": "redis"})
+def test_redis_source_without_client_still_gets_synthetic_data(feed_settings, collected):
+    """A Redis-only config with no Redis must not leave the dashboard empty."""
+    settings = FeedSettings(**{
+        **feed_settings.__dict__,
+        "source": "redis",
+        "synthetic_interval_seconds": 0.05,
+    })
     manager = make_manager(settings, collected, redis_client=None)
     manager.start()
     try:
-        time.sleep(0.2)
+        assert wait_for(lambda: len(collected) >= 2)
+        assert "synthetic-fallback" in manager.status()["threads"]
     finally:
         manager.stop()
-
-    assert collected == []
-    assert manager.status()["threads"] == []
 
 
 def test_status_reports_no_frames_before_start(feed_settings, collected):
