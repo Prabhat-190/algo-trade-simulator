@@ -14,9 +14,12 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "gunicorn --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2} --worker-class gthread --threads ${GUNICORN_THREADS:-4} --timeout 120 --graceful-timeout 30 --access-logfile - --error-logfile - trading.src.main:server"
+# Left unset so the Dockerfile CMD is used. That keeps one definition of how the
+# server starts, instead of two that can drift apart.
 healthcheckPath = "/healthz"
-healthcheckTimeout = 120
+# Cold start has to import pandas, numpy, scikit-learn and Dash before the first
+# response, so allow generous headroom here.
+healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 numReplicas = 1

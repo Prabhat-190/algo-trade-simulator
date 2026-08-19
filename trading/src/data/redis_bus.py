@@ -31,6 +31,13 @@ def connect(settings: RedisSettings, label: str = "redis") -> redis.Redis | None
     Returns ``None`` instead of raising when Redis is unreachable so that every
     caller can degrade to in-process behaviour rather than crashing.
     """
+    if not settings.configured:
+        logger.info(
+            "[%s] No Redis configured (set REDIS_URL or REDIS_HOST to enable it); "
+            "using in-process state.", label,
+        )
+        return None
+
     delay = 1.0
     for attempt in range(1, settings.max_retries + 1):
         try:

@@ -57,11 +57,19 @@ class RedisSettings:
     port: int = 6379
     password: str | None = None
     db: int = 0
-    connect_timeout: float = 5.0
-    max_retries: int = 3
+    # Kept short: this connection is made during startup while a platform health
+    # check is already probing the port, so long retries delay the first response.
+    connect_timeout: float = 2.0
+    max_retries: int = 2
+    # False when no Redis variable was set. Nobody asked for Redis, so startup
+    # must not be spent retrying a default address that cannot succeed.
+    configured: bool = False
 
     @classmethod
     def from_env(cls) -> RedisSettings:
+        timeout = _env_float("REDIS_CONNECT_TIMEOUT", 2.0)
+        retries = _env_int("REDIS_MAX_RETRIES", 2)
+
         # Managed Redis add-ons (Railway, Render, Upstash) expose a single URL.
         url = os.environ.get("REDIS_URL") or os.environ.get("REDIS_PRIVATE_URL")
         if url:
@@ -71,16 +79,19 @@ class RedisSettings:
                 port=parsed.port or 6379,
                 password=parsed.password,
                 db=int(parsed.path.lstrip("/") or 0),
-                connect_timeout=_env_float("REDIS_CONNECT_TIMEOUT", 5.0),
-                max_retries=_env_int("REDIS_MAX_RETRIES", 3),
+                connect_timeout=timeout,
+                max_retries=retries,
+                configured=True,
             )
+
         return cls(
             host=_env_str("REDIS_HOST", "localhost"),
             port=_env_int("REDIS_PORT", 6379),
             password=os.environ.get("REDIS_PASSWORD") or None,
             db=_env_int("REDIS_DB", 0),
-            connect_timeout=_env_float("REDIS_CONNECT_TIMEOUT", 5.0),
-            max_retries=_env_int("REDIS_MAX_RETRIES", 3),
+            connect_timeout=timeout,
+            max_retries=retries,
+            configured=bool(os.environ.get("REDIS_HOST")),
         )
 
 

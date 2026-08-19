@@ -63,6 +63,35 @@ def test_debug_flag_parsing(monkeypatch, value, expected):
     assert Settings.from_env().debug is expected
 
 
+def test_redis_is_not_configured_by_default():
+    """Nothing set means Redis must not be attempted at all.
+
+    Retrying an unconfigured default delayed the first response by ~11s and made
+    platform health checks fail the deploy.
+    """
+    settings = RedisSettings.from_env()
+
+    assert settings.configured is False
+    assert settings.max_retries <= 2
+    assert settings.connect_timeout <= 2.0
+
+
+def test_setting_redis_host_marks_it_configured(monkeypatch):
+    monkeypatch.setenv("REDIS_HOST", "cache")
+    assert RedisSettings.from_env().configured is True
+
+
+def test_setting_redis_url_marks_it_configured(monkeypatch):
+    monkeypatch.setenv("REDIS_URL", "redis://cache:6379")
+    assert RedisSettings.from_env().configured is True
+
+
+def test_redis_port_alone_does_not_enable_redis(monkeypatch):
+    """A stray REDIS_PORT should not trigger connection attempts on localhost."""
+    monkeypatch.setenv("REDIS_PORT", "6379")
+    assert RedisSettings.from_env().configured is False
+
+
 def test_redis_url_is_parsed(monkeypatch):
     monkeypatch.setenv("REDIS_URL", "redis://:s3cret@redis.internal:6380/2")
     redis_settings = RedisSettings.from_env()

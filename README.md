@@ -50,6 +50,8 @@ The repository is configured to deploy as a **single service with no add-ons**.
 
 That is the whole process. `/healthz` is the health check and the embedded feed means the dashboard has data the moment it boots.
 
+Cold start takes roughly ten seconds, almost all of it importing pandas, numpy, scikit-learn and Dash, so `healthcheckTimeout` is set to 300s to leave headroom. Do not set `REDIS_HOST` unless you have actually attached a Redis service: pointing it at an address with nothing listening adds connection retries to every worker's startup.
+
 Using the CLI instead:
 
 ```bash
@@ -125,12 +127,14 @@ Every setting has a working default. See [`.env.example`](.env.example) for the 
 | `SYMBOL` | `BTC-USDT` | Symbol shown in the UI and synthetic frames |
 | `FEED_STALE_AFTER_SECONDS` | `6` | Silence before the embedded fallback engages |
 | `REDIS_URL` | — | Managed Redis connection string; takes precedence over the host/port pair |
-| `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Redis location when no URL is set |
+| `REDIS_HOST` / `REDIS_PORT` | — / `6379` | Redis location when no URL is set |
 | `MODELS_DIR` | — | Directory holding pre-trained `.joblib` model weights |
-| `WEB_CONCURRENCY` | `2` | Gunicorn workers |
-| `GUNICORN_THREADS` | `4` | Threads per worker |
+| `WEB_CONCURRENCY` | `1` | Gunicorn workers |
+| `GUNICORN_THREADS` | `8` | Threads per worker |
 
-Redis is never required. If it is unreachable the app logs a warning and keeps running with in-memory project storage.
+Redis is never required. It is only attempted when `REDIS_URL` or `REDIS_HOST` is set; otherwise startup skips it entirely rather than retrying an address nobody configured, which keeps cold starts fast. When Redis is configured but unreachable, the app logs a warning and continues with in-memory project storage.
+
+Keep `WEB_CONCURRENCY=1` unless Redis is configured. Each worker holds its own simulator and its own in-memory project storage, so with several workers and no Redis a saved project would appear or vanish depending on which worker served the request. Scale out once Redis is providing shared state.
 
 ---
 

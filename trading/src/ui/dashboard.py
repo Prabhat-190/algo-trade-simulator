@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import dash
-import dash_bootstrap_components as dbc
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from ..models.trading_project import TradingProjectStore
 from ..services.market_state import MarketState
@@ -43,12 +43,20 @@ class Dashboard:
         self.market = market
         self.project_store = project_store
 
+        # Stylesheets live in assets/ (including a vendored Bootstrap) so the
+        # dashboard does not depend on a CDN. serve_locally keeps Plotly/Dash JS
+        # on this origin, which avoids mixed-content failures behind Railway's
+        # HTTPS proxy.
         self.app = dash.Dash(
             __name__,
-            external_stylesheets=[dbc.themes.BOOTSTRAP],
             assets_folder=str(ASSETS_DIR),
             title=PAGE_TITLE,
             update_title=None,
+            serve_locally=True,
+            meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+        )
+        self.app.server.wsgi_app = ProxyFix(
+            self.app.server.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1,
         )
 
         self.app.layout = layout_module.build_layout(

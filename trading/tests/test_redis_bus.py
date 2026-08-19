@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import time
 
 from redis.exceptions import RedisError
 
@@ -57,8 +58,23 @@ def test_frame_without_symbol_uses_placeholder():
 
 
 def test_connect_returns_none_when_unreachable():
-    settings = RedisSettings(host="127.0.0.1", port=1, max_retries=1, connect_timeout=0.05)
+    settings = RedisSettings(
+        host="127.0.0.1", port=1, max_retries=1, connect_timeout=0.05, configured=True)
     assert redis_bus.connect(settings, label="test") is None
+
+
+def test_connect_skips_immediately_when_not_configured():
+    """Unconfigured Redis must return instantly rather than retrying.
+
+    Guards the regression where startup spent ~11s on backoff retries against a
+    default localhost address, delaying the first response past the health check.
+    """
+    settings = RedisSettings(host="10.255.255.1", port=6379, max_retries=5,
+                             connect_timeout=5.0, configured=False)
+
+    started = time.monotonic()
+    assert redis_bus.connect(settings, label="test") is None
+    assert time.monotonic() - started < 0.5
 
 
 def test_subscribe_dispatches_frames_and_honours_stop():
