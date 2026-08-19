@@ -48,6 +48,34 @@ def test_app_starts_without_redis(app):
     assert app.project_store is not None
 
 
+def test_app_starts_quickly_when_redis_is_unconfigured(offline_settings_module):
+    """Startup must not block on Redis, or health checks fail the deploy.
+
+    An earlier version retried an unconfigured localhost Redis with backoff,
+    adding roughly 11 seconds before the first response.
+    """
+    from dataclasses import replace
+
+    from trading.src.config import RedisSettings
+
+    settings = replace(
+        offline_settings_module,
+        # An unroutable address: any real attempt would hang until timeout.
+        redis=RedisSettings(host="10.255.255.1", port=6379, max_retries=3,
+                            connect_timeout=5.0, configured=False),
+    )
+
+    started = time.monotonic()
+    instance = create_app(settings)
+    try:
+        elapsed = time.monotonic() - started
+        assert elapsed < 5.0, f"startup took {elapsed:.1f}s"
+        assert instance.redis_client is None
+        assert instance.health_payload()["redis"]["status"] == "not_configured"
+    finally:
+        instance.feed_manager.stop()
+
+
 def test_market_data_arrives_from_embedded_feed(app):
     assert app.market.last_update_time > 0
     assert app.market.snapshot()["mid_price"] > 0
@@ -85,7 +113,11 @@ def test_theme_stylesheet_is_served(client, app):
 
     response = client.get("/assets/theme.css")
     assert response.status_code == 200
-    assert "--cyber-cyan" in response.get_data(as_text=True)
+    body = response.get_data(as_text=True)
+    assert "--cyber-cyan" in body
+    # Layout must not depend on a Bootstrap CDN that production HTTPS can block.
+    assert ".container-fluid" in body
+    assert ".btn-primary" in body
 
 
 def test_simulation_runs_against_live_synthetic_book(app):

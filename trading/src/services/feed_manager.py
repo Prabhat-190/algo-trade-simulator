@@ -99,9 +99,25 @@ class FeedManager:
         interval = max(0.1, self.settings.synthetic_interval_seconds)
 
         while not self._stop.is_set():
-            if not only_when_stale or self._is_stale():
+            if not only_when_stale or self._fallback_should_emit():
                 self._emit(feed.step(), source="synthetic")
             self._stop.wait(interval)
+
+    def _fallback_should_emit(self) -> bool:
+        """Whether the standby generator should produce a frame now.
+
+        Waiting for staleness before every frame would advance the book only once
+        per stale interval, making a demo deploy look frozen between lurches. So
+        once the fallback owns the book it keeps a steady cadence, and it stands
+        down as soon as frames start arriving from a real source.
+        """
+        with self._lock:
+            active = self._active_source
+            last = self._last_frame_at
+
+        if last == 0.0 or active == "synthetic":
+            return True
+        return (time.time() - last) >= self.settings.stale_after_seconds
 
     def _run_websocket(self) -> None:
         # Imported lazily so the dashboard does not require `websockets` unless
@@ -127,13 +143,6 @@ class FeedManager:
             self._last_frame_at = time.time()
             self._frame_count += 1
             self._active_source = source
-
-    def _is_stale(self) -> bool:
-        with self._lock:
-            last = self._last_frame_at
-        if last == 0.0:
-            return True
-        return (time.time() - last) >= self.settings.stale_after_seconds
 
     def status(self) -> dict[str, object]:
         """Snapshot for the health endpoint and the dashboard status panel."""

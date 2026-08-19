@@ -53,7 +53,9 @@ def placeholder(message: str) -> go.Figure:
         xref="paper",
         yref="paper",
         showarrow=False,
-        font={"size": 16, "color": COLOR_MUTED},
+        font={"size": 14, "color": COLOR_MUTED},
+        align="center",
+        width=280,
     )
     fig.update_xaxes(visible=False)
     fig.update_yaxes(visible=False)
