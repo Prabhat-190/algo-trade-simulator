@@ -134,14 +134,8 @@ def test_simulation_runs_against_live_synthetic_book(app):
 
 
 def test_readyz_is_unavailable_when_data_is_stale(offline_settings_module):
-    """A dashboard with no feed must fail readiness while still serving /healthz."""
-    from dataclasses import replace
-
-    settings = replace(
-        offline_settings_module,
-        feed=replace(offline_settings_module.feed, source="redis"),
-    )
-    instance = create_app(settings)
+    """A dashboard with feeds disabled must fail readiness while still serving /healthz."""
+    instance = create_app(offline_settings_module, start_feeds=False)
     try:
         client = instance.server.test_client()
         assert client.get("/healthz").status_code == 200
