@@ -113,7 +113,11 @@ def test_theme_stylesheet_is_served(client, app):
 
     response = client.get("/assets/theme.css")
     assert response.status_code == 200
-    assert "--cyber-cyan" in response.get_data(as_text=True)
+    body = response.get_data(as_text=True)
+    assert "--cyber-cyan" in body
+    # Layout must not depend on a Bootstrap CDN that production HTTPS can block.
+    assert ".container-fluid" in body
+    assert ".btn-primary" in body
 
 
 def test_simulation_runs_against_live_synthetic_book(app):

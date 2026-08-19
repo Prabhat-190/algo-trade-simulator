@@ -230,33 +230,40 @@ def register_callbacks(
         Input("interval-component", "n_intervals"),
     )
     def refresh_live_panels(_n_intervals):
-        snapshot = market.snapshot()
-        asks_df, bids_df = market.orderbook_frames()
-        status, stamp = describe_connection(snapshot["last_update"] or 0)
+        try:
+            snapshot = market.snapshot()
+            asks_df, bids_df = market.orderbook_frames()
+            status, stamp = describe_connection(snapshot["last_update"] or 0)
 
-        mid_price = snapshot["mid_price"]
-        spread = snapshot["spread"]
-        imbalance = snapshot["imbalance"]
-        depth = snapshot["depth"]
+            mid_price = snapshot["mid_price"]
+            spread = snapshot["spread"]
+            imbalance = snapshot["imbalance"]
+            depth = snapshot["depth"]
 
-        source = "starting…"
-        if feed_status is not None:
-            info = feed_status()
-            active = info.get("active_source", "none")
-            configured = info.get("configured_source", "auto")
-            frames = info.get("frames_received", 0)
-            source = (f"{active} ({frames} frames)" if active != "none"
-                      else f"{configured}: no frames yet")
+            source = "starting…"
+            if feed_status is not None:
+                info = feed_status()
+                active = info.get("active_source", "none")
+                configured = info.get("configured_source", "auto")
+                frames = info.get("frames_received", 0)
+                source = (f"{active} ({frames} frames)" if active != "none"
+                          else f"{configured}: no frames yet")
 
-        return (
-            f"${mid_price:,.2f}" if mid_price else "--",
-            f"{spread:,.2f} ({snapshot['spread_pct']:.3f}%)" if spread and snapshot["spread_pct"] else "--",
-            f"{imbalance:+.3f}" if imbalance is not None else "--",
-            f"{depth:,.2f}" if depth else "--",
-            figures.depth_chart(asks_df, bids_df),
-            figures.price_history_chart(market.price_history()),
-            status,
-            stamp,
-            source,
-            f"{snapshot['symbol'] or 'no symbol'} · {status.lower()}",
-        )
+            return (
+                f"${mid_price:,.2f}" if mid_price else "--",
+                (f"{spread:,.2f} ({snapshot['spread_pct']:.3f}%)"
+                 if spread and snapshot["spread_pct"] else "--"),
+                f"{imbalance:+.3f}" if imbalance is not None else "--",
+                f"{depth:,.2f}" if depth else "--",
+                figures.depth_chart(asks_df, bids_df),
+                figures.price_history_chart(market.price_history()),
+                status,
+                stamp,
+                source,
+                f"{snapshot['symbol'] or 'no symbol'} · {status.lower()}",
+            )
+        except Exception:
+            logger.exception("Live panel refresh failed")
+            empty = figures.placeholder("Refreshing market data")
+            return ("--", "--", "--", "--", empty, empty,
+                    "Refresh error", "--", "error", "error")
