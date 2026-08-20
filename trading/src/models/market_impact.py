@@ -58,14 +58,7 @@ class AlmgrenChrissModel:
             execution_time: Time horizon for execution (in hours)
 
         Returns:
-            Dict: Dictionary with temporary, permanent, execution risk, and total impact,
-                all as absolute costs in quote currency
-
-        Notes:
-            Impact is driven by the *participation rate* (order size relative to
-            average daily volume), not by notional value. A model proportional to
-            notional alone would report the same percentage cost for a $100 order
-            as for a $10M order, which is not how impact behaves.
+            Dict: temp / permanent / execution risk / total (quote currency)
         """
         order_value = mid_price * order_size
         if order_value <= 0:
@@ -78,8 +71,7 @@ class AlmgrenChrissModel:
 
         participation = order_size / avg_daily_volume if avg_daily_volume > 0 else 0.0
 
-        # Temporary impact follows the empirical square-root law:
-        # Δp/p ≈ Y × σ × sqrt(Q / V). It reverts after the trade completes.
+        # sqrt-law temporary impact
         temporary_fraction = (
             self.temporary_impact_factor
             * volatility
@@ -87,19 +79,15 @@ class AlmgrenChrissModel:
             * (1 + self.market_vol_factor * volatility)
         )
 
-        # Consuming a large share of the visible book costs more than the daily
-        # volume ratio alone implies, so widen by a bounded depth penalty.
         if orderbook_depth > 0:
             temporary_fraction *= 1.0 + np.tanh(order_size / orderbook_depth)
 
-        # Permanent impact is linear in participation and does not revert.
+        # linear permanent impact
         permanent_fraction = self.permanent_impact_factor * volatility * participation
 
         temporary_impact = temporary_fraction * order_value
         permanent_impact = permanent_fraction * order_value
 
-        # Execution risk: variance of the unexecuted position over the horizon,
-        # scaled by risk aversion (0.5 × ψ × σ² × T × value).
         execution_risk = (
             0.5 * self.risk_aversion * (volatility ** 2) * execution_time * order_value
         )

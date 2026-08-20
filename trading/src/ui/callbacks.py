@@ -1,7 +1,5 @@
-"""Dash callback registration.
-
-Each callback is a small module-level function so the formatting logic can be
-tested without spinning up a Dash server.
+"""
+Dash callbacks for the simulator UI.
 """
 from __future__ import annotations
 
@@ -44,7 +42,7 @@ def format_currency(value: float) -> str:
 
 def format_metrics(result: dict[str, Any], project_name: str, symbol: str,
                    strategy: str, quantity: float, side: str) -> list[str]:
-    """Turn a simulation result into the seven result-panel strings."""
+    """Format sim results for the right-hand panel."""
     strategy_label = (strategy or "market_order").replace("_", " ").title()
     return [
         f"{project_name or 'Untitled Project'} | {strategy_label} | {symbol} | "
@@ -62,7 +60,7 @@ def format_metrics(result: dict[str, Any], project_name: str, symbol: str,
 
 
 def describe_connection(last_update: float, now: float | None = None) -> tuple[str, str]:
-    """Return (status text, last update text) for the connection panel."""
+    """Status text + last update stamp."""
     if not last_update:
         return "Waiting for data", "--"
 
@@ -74,7 +72,7 @@ def describe_connection(last_update: float, now: float | None = None) -> tuple[s
 
 
 def build_history_table(rows: list[dict[str, Any]]) -> Any:
-    """Render simulation history rows as a table, newest first."""
+    """Simple html table, newest first."""
     if not rows:
         return html.P("Run a simulation to start building history.", className="text-muted")
 
@@ -93,7 +91,7 @@ def register_callbacks(
     project_store: TradingProjectStore | None = None,
     feed_status: Callable[[], dict[str, Any]] | None = None,
 ) -> None:
-    """Attach every dashboard callback to ``app``."""
+    """Wire up save/load/simulate + live ticker refresh."""
     metric_outputs = [Output(field_id, "children") for field_id, _ in METRIC_FIELDS]
 
     @app.callback(

@@ -1,11 +1,6 @@
-"""Application factory.
-
-Building the app inside a function (rather than at import time) means tests can
-construct an isolated instance, and an unreachable Redis or feed source degrades
-into a warning instead of an ImportError that kills the container.
 """
-from __future__ import annotations
-
+Application factory for the trade simulator dashboard.
+"""
 import logging
 import time
 
@@ -24,8 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class TradeSimulatorApp:
-    """Composed application: market state, data feeds, dashboard and health route."""
-
     def __init__(self, settings: Settings | None = None, start_feeds: bool = True):
         self.settings = settings or Settings.from_env()
 
@@ -61,7 +54,6 @@ class TradeSimulatorApp:
 
         @self.server.get("/readyz")
         def readyz():
-            """Ready only once market data has actually arrived."""
             payload = self.health_payload()
             ready = payload["market_data"]["status"] == "fresh"
             return {"ready": ready, **payload}, 200 if ready else 503
@@ -99,7 +91,6 @@ class TradeSimulatorApp:
         }
 
     def run(self) -> None:
-        """Run the Dash development server (local use only)."""
         logger.info("Starting dashboard on %s:%s", self.settings.host, self.settings.port)
         self.dashboard.run(
             host=self.settings.host,
@@ -109,13 +100,11 @@ class TradeSimulatorApp:
 
 
 def create_app(settings: Settings | None = None, start_feeds: bool = True) -> TradeSimulatorApp:
-    """Build a fully wired application instance."""
     settings = settings or Settings.from_env()
     configure_logging(settings.log_level)
     return TradeSimulatorApp(settings=settings, start_feeds=start_feeds)
 
 
 def create_wsgi_app(settings: Settings | None = None) -> tuple[TradeSimulatorApp, Flask]:
-    """Build the app and return it alongside its WSGI callable for Gunicorn."""
     app = create_app(settings)
     return app, app.server

@@ -64,11 +64,6 @@ def test_connect_returns_none_when_unreachable():
 
 
 def test_connect_skips_immediately_when_not_configured():
-    """Unconfigured Redis must return instantly rather than retrying.
-
-    Guards the regression where startup spent ~11s on backoff retries against a
-    default localhost address, delaying the first response past the health check.
-    """
     settings = RedisSettings(host="10.255.255.1", port=6379, max_retries=5,
                              connect_timeout=5.0, configured=False)
 

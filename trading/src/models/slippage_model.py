@@ -9,15 +9,12 @@ from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 
-# Heuristic weights for the unfitted fallback estimator. Tuned so a small order
-# costs roughly half the spread per unit and a book-sized order costs a few
-# multiples of it.
+# fallback heuristic weights
 SIZE_SENSITIVITY = 0.5
 VOLATILITY_SENSITIVITY = 20.0
 IMBALANCE_SENSITIVITY = 0.3
 MIN_IMBALANCE_MULTIPLIER = 0.1
 
-# Minimum training rows before a regression is worth fitting.
 MIN_TRAINING_SAMPLES = 10
 
 
@@ -102,8 +99,7 @@ class SlippageModel:
             orderbook_imbalance: Current orderbook imbalance
 
         Returns:
-            float: Estimated *total* slippage cost in quote currency for the whole
-                order, not a per-unit price concession
+            float: total slippage cost in quote currency
         """
         if not self.is_fitted:
             # Fallback estimation if model not fitted
@@ -132,18 +128,11 @@ class SlippageModel:
         Returns:
             float: Estimated total slippage cost in quote currency
         """
-        # Crossing the spread costs at least half of it per unit traded.
+        # base = half spread, then bump for size / vol / imbalance
         half_spread = spread * 0.5
 
-        # Larger orders walk further into the book, so the concession per unit
-        # grows with size. Logarithmic to avoid exploding on very large orders.
         size_multiplier = 1.0 + SIZE_SENSITIVITY * np.log1p(max(order_size, 0.0))
-
-        # More volatile markets quote defensively, widening realised slippage.
         vol_multiplier = 1.0 + VOLATILITY_SENSITIVITY * volatility
-
-        # A book leaning in the trade's favour reduces the concession; floored so
-        # an extreme imbalance can never produce negative slippage.
         imbalance_multiplier = max(
             MIN_IMBALANCE_MULTIPLIER,
             1.0 - IMBALANCE_SENSITIVITY * orderbook_imbalance,

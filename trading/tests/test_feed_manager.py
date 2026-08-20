@@ -1,4 +1,4 @@
-"""Tests for the background feed supervisor."""
+"""Feed manager tests."""
 from __future__ import annotations
 
 import time
@@ -40,7 +40,7 @@ def test_synthetic_source_delivers_frames(feed_settings, collected):
 
 
 def test_auto_source_falls_back_without_redis(feed_settings, collected):
-    """A single container with no feeder and no Redis must still get data."""
+    """auto mode should still produce frames with no redis."""
     settings = FeedSettings(**{
         **feed_settings.__dict__,
         "source": "auto",
@@ -60,10 +60,7 @@ def test_auto_source_falls_back_without_redis(feed_settings, collected):
 
 
 def test_auto_fallback_keeps_a_steady_cadence(feed_settings, collected):
-    """The standby generator must tick continuously, not once per stale window.
-
-    Emitting only while stale left the demo book frozen between lurches.
-    """
+    """Fallback should keep ticking, not fire once per stale window."""
     settings = FeedSettings(**{
         **feed_settings.__dict__,
         "source": "auto",
@@ -81,7 +78,7 @@ def test_auto_fallback_keeps_a_steady_cadence(feed_settings, collected):
 
 
 def test_auto_fallback_yields_to_a_real_source(feed_settings, collected):
-    """Real frames must win: the generator stops while another source is live."""
+    """Stop generating once a real source is live."""
     settings = FeedSettings(**{
         **feed_settings.__dict__,
         "source": "auto",
@@ -105,7 +102,7 @@ def test_auto_fallback_yields_to_a_real_source(feed_settings, collected):
 
 
 def test_redis_source_without_client_still_gets_synthetic_data(feed_settings, collected):
-    """A Redis-only config with no Redis must not leave the dashboard empty."""
+    """FEED_SOURCE=redis with no client still gets synthetic data."""
     settings = FeedSettings(**{
         **feed_settings.__dict__,
         "source": "redis",
@@ -155,5 +152,5 @@ def test_crashing_source_does_not_raise(feed_settings):
     finally:
         manager.stop()
 
-    # The guard logs and exits the thread rather than propagating.
+    # thread should eat the error, not crash the process
     assert manager.status()["frames_received"] == 0

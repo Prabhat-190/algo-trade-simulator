@@ -1,13 +1,6 @@
-"""Supplies the dashboard with order book frames, whatever the deployment shape.
-
-A single container has no separate feeder process, so relying only on Redis
-leaves the dashboard permanently empty. The manager therefore runs a Redis
-subscriber *and* an embedded fallback source, and the fallback only emits once
-the book has gone stale. That keeps real data authoritative when a feeder is
-running while guaranteeing a one-service deploy still shows a live book.
 """
-from __future__ import annotations
-
+Pulls orderbook updates from redis / websocket / a local generator.
+"""
 import asyncio
 import logging
 import threading
@@ -26,8 +19,6 @@ FrameHandler = Callable[[dict], None]
 
 
 class FeedManager:
-    """Owns every background thread that pushes order book frames into the app."""
-
     def __init__(
         self,
         settings: FeedSettings,
@@ -45,10 +36,7 @@ class FeedManager:
         self._frame_count = 0
         self._active_source = "none"
 
-    # -- lifecycle ---------------------------------------------------------
-
     def start(self) -> None:
-        """Launch the configured background sources as daemon threads."""
         source = self.settings.source
 
         if source in (FEED_AUTO, FEED_REDIS) and self.redis_client is not None:
@@ -57,9 +45,7 @@ class FeedManager:
         if source == FEED_WEBSOCKET:
             self._spawn("websocket-feed", self._run_websocket)
 
-        # Always keep an in-process book so a one-service Railway deploy is never
-        # stuck on "Waiting for orderbook data". Real frames still win: the
-        # generator stands down while redis/websocket is producing.
+        # keep a local book going so the ui isnt empty if redis/ws is quiet
         if source == FEED_SYNTHETIC:
             self._spawn("synthetic-feed", lambda: self._run_synthetic(only_when_stale=False))
         else:
@@ -75,15 +61,12 @@ class FeedManager:
         logger.info("Started market data thread: %s", name)
 
     def _guard(self, name: str, target: Callable[[], None]) -> Callable[[], None]:
-        """Keep a crashing source from silently taking down data delivery."""
         def runner() -> None:
             try:
                 target()
             except Exception:
                 logger.exception("Market data thread %s stopped unexpectedly", name)
         return runner
-
-    # -- sources -----------------------------------------------------------
 
     def _run_redis_subscriber(self) -> None:
         assert self.redis_client is not None
@@ -103,13 +86,6 @@ class FeedManager:
             self._stop.wait(interval)
 
     def _fallback_should_emit(self) -> bool:
-        """Whether the standby generator should produce a frame now.
-
-        Waiting for staleness before every frame would advance the book only once
-        per stale interval, making a demo deploy look frozen between lurches. So
-        once the fallback owns the book it keeps a steady cadence, and it stands
-        down as soon as frames start arriving from a real source.
-        """
         with self._lock:
             active = self._active_source
             last = self._last_frame_at
@@ -119,8 +95,6 @@ class FeedManager:
         return (time.time() - last) >= self.settings.stale_after_seconds
 
     def _run_websocket(self) -> None:
-        # Imported lazily so the dashboard does not require `websockets` unless
-        # an operator actually selects the live websocket source.
         from ..data.websocket_client import OrderbookWebSocketClient
 
         client = OrderbookWebSocketClient(
@@ -134,8 +108,6 @@ class FeedManager:
         finally:
             loop.close()
 
-    # -- state -------------------------------------------------------------
-
     def _emit(self, frame: dict, source: str) -> None:
         self._on_frame(frame)
         with self._lock:
@@ -144,7 +116,6 @@ class FeedManager:
             self._active_source = source
 
     def status(self) -> dict[str, object]:
-        """Snapshot for the health endpoint and the dashboard status panel."""
         with self._lock:
             last = self._last_frame_at
             count = self._frame_count

@@ -1,4 +1,4 @@
-"""Shared pytest fixtures."""
+"""pytest fixtures."""
 from __future__ import annotations
 
 import pytest
@@ -34,7 +34,7 @@ EXPECTED_MID_PRICE = (BEST_ASK + BEST_BID) / 2
 
 @pytest.fixture
 def sample_orderbook() -> dict:
-    """A five-level book with a known mid price of 45000.0."""
+    """Five level book, mid = 45000."""
     return {
         **SAMPLE_ORDERBOOK,
         "asks": [list(level) for level in SAMPLE_ORDERBOOK["asks"]],
@@ -72,7 +72,7 @@ def feed_settings() -> FeedSettings:
 
 @pytest.fixture
 def offline_settings(feed_settings: FeedSettings) -> Settings:
-    """Settings that never reach the network: Redis retries are disabled."""
+    """No network. Redis retries disabled."""
     return Settings(
         port=0,
         redis=RedisSettings(host="127.0.0.1", port=1, max_retries=1, connect_timeout=0.05),
