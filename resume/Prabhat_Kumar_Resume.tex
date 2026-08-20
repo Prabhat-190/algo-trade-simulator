@@ -1,6 +1,6 @@
 \documentclass[a4paper,10pt]{article}
 
-\usepackage[top=0.26in,bottom=0.24in,left=0.38in,right=0.38in]{geometry}
+\usepackage[top=0.24in,bottom=0.22in,left=0.38in,right=0.38in]{geometry}
 \usepackage[hidelinks]{hyperref}
 \usepackage{enumitem}
 \usepackage{tabularx}
@@ -26,7 +26,7 @@
   {0em}
   {}
   [\vspace{-2pt}\titlerule]
-\titlespacing*{\section}{0pt}{7pt}{3.5pt}
+\titlespacing*{\section}{0pt}{6.5pt}{3pt}
 
 \newcommand{\resumeItem}[1]{\item #1}
 
@@ -51,14 +51,14 @@
 
 \setlist[itemize]{
   leftmargin=1.15em,
-  itemsep=1.8pt,
-  topsep=0.8pt,
+  itemsep=1.5pt,
+  topsep=0.6pt,
   parsep=0pt,
   partopsep=0pt
 }
 
 \begin{document}
-\fontsize{9.0}{10.7}\selectfont
+\fontsize{9.0}{10.45}\selectfont
 
 \begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}X>{\raggedleft\arraybackslash}p{0.36\textwidth}@{}}
   \includegraphics[width=0.62in]{IIT_KGP.png} &
@@ -78,12 +78,8 @@
 
 \section{Education}
 
-\begin{tabularx}{\textwidth}{@{}X r@{}}
-\textbf{Indian Institute of Technology, Kharagpur} & \textbf{CGPA: 7.29}\\
-Bachelor of Science in Mathematics and Computing & \\[1pt]
-\textbf{Jawahar Navodaya Vidyalaya, Supaul} (CBSE) & \textbf{77.8\%}\\
-Senior Secondary (Class 12) &
-\end{tabularx}
+\textbf{Indian Institute of Technology, Kharagpur} \hfill \textbf{CGPA: 7.29}\\
+Bachelor of Science in Mathematics and Computing
 
 \section{Experience}
 
@@ -148,7 +144,7 @@ Senior Secondary (Class 12) &
 
 \begin{tabularx}{\textwidth}{@{} l X @{}}
 \textbf{Languages:}
-& Java, Python, C++, JavaScript, SQL \\
+& Java, Python, C++, JavaScript, SQL, React.js, Next.js, HTML, CSS \\
 
 \textbf{Backend:}
 & Spring Boot, Spring Data JPA, REST APIs, Node.js, Express.js, FastAPI, WebSocket, Microservices, JUnit, SLF4J \\
@@ -156,14 +152,14 @@ Senior Secondary (Class 12) &
 \textbf{ML / Data:}
 & Scikit-learn, Keras, Pandas, NumPy, LSTM, Time-Series Forecasting, Portfolio Optimization, Plotly, Dash, Streamlit \\
 
-\textbf{Frontend:}
-& React.js, Next.js, HTML, CSS \\
-
 \textbf{Databases / Tools:}
 & MySQL, MongoDB, Redis, H2, ChromaDB, Docker, Git, GitHub, Postman, Gradle, Gunicorn, Nginx, OpenAPI \\
 
 \textbf{Core CS:}
-& Data Structures and Algorithms, OOP, DBMS, Operating Systems, Computer Networks, System Design
+& Data Structures and Algorithms, OOP, DBMS, Operating Systems, Computer Networks, System Design \\
+
+\textbf{Coursework:}
+& Algorithms, DBMS, File Organization, Computer Organization, Theory of Computation, Big Data Analysis, Optimization, Probability and Statistics, Stochastic Processes, Linear Algebra, Discrete Mathematics, Graph Theory
 \end{tabularx}
 
 \section{Achievements}
@@ -174,10 +170,5 @@ Senior Secondary (Class 12) &
   \resumeItem{Awarded the \textbf{Reliance Foundation Undergraduate Scholarship} (top \textbf{0.8\%} of 120,000+ applicants).}
   \resumeItem{Secured \textbf{Top 8\% in JEE Advanced} and \textbf{Top 1.2\% in JEE Main}; HackerRank Software Engineer Intern Certification.}
 \end{itemize}
-
-\section{Relevant Coursework}
-
-\textbf{CS:} Algorithms, Data Structures, DBMS, File Organization, Computer Organization, Theory of Computation, Big Data Analysis.
-\textbf{Math:} Optimization, Probability and Statistics, Stochastic Processes, Linear Algebra, Discrete Mathematics, Graph Theory.
 
 \end{document}
