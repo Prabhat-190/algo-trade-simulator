@@ -1,7 +1,5 @@
-"""Dashboard layout.
-
-Pure component construction — no callbacks and no simulator access — so the
-layout can be rendered and inspected in tests.
+"""
+Dash layout for the trade simulator UI.
 """
 from __future__ import annotations
 
@@ -54,13 +52,13 @@ def _header() -> html.Div:
         html.Div([
             html.H1("Algo Trade Simulator", className="app-title"),
             html.P(
-                "Real-time transaction cost analysis: slippage, fees and market impact",
+                "Real-time cost analysis: slippage, fees, market impact",
                 className="app-subtitle",
             ),
         ]),
         html.Div([
             html.Span(className="live-status-dot"),
-            html.Span(id="feed-badge", children="starting…"),
+            html.Span(id="feed-badge", children="starting..."),
         ], className="feed-badge"),
     ], className="app-header")
 
@@ -212,7 +210,7 @@ def build_layout(
     default_symbol: str,
     refresh_interval_ms: int = 1000,
 ) -> dbc.Container:
-    """Assemble the full dashboard layout."""
+    """Build the page."""
     return dbc.Container([
         _header(),
         _ticker_strip(),

@@ -1,11 +1,6 @@
-"""Thread-safe access to the shared simulator state.
-
-Order book frames arrive on background threads while Dash callbacks read the
-same simulator from request threads. Every read and write goes through this
-wrapper so callers cannot observe a half-applied book.
 """
-from __future__ import annotations
-
+Shared simulator state. Feed threads write, dash callbacks read.
+"""
 import logging
 import threading
 import time
@@ -20,15 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class MarketState:
-    """Owns the simulator and a rolling mid-price history."""
-
     def __init__(self, simulator: TradeSimulator, history_size: int = 300):
         self._simulator = simulator
         self._lock = threading.RLock()
         self._price_history: deque[tuple[float, float]] = deque(maxlen=history_size)
 
     def apply_frame(self, frame: dict) -> None:
-        """Apply an incoming order book frame and record its mid price."""
         with self._lock:
             try:
                 self._simulator.update_orderbook(frame)
@@ -57,7 +49,6 @@ class MarketState:
             return self._simulator.last_update_time
 
     def snapshot(self) -> dict[str, float | None]:
-        """Current top-of-book metrics for the live ticker strip."""
         with self._lock:
             book = self._simulator.orderbook
             mid_price = book.get_mid_price()

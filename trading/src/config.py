@@ -1,4 +1,6 @@
-"""Environment-driven configuration for every process in the simulator."""
+"""
+Env-based settings for the dashboard and feeder processes.
+"""
 from __future__ import annotations
 
 import os
@@ -7,9 +9,6 @@ from urllib.parse import urlparse
 
 DEFAULT_WEBSOCKET_URI = "wss://ws.gomarket-cpp.goquant.io/ws/l2-orderbook/okx/BTC-USDT-SWAP"
 
-# Feed sources. "auto" keeps the dashboard populated no matter how it is deployed:
-# it consumes Redis when a feeder is publishing and falls back to a local source
-# when nothing has arrived recently.
 FEED_AUTO = "auto"
 FEED_SYNTHETIC = "synthetic"
 FEED_WEBSOCKET = "websocket"
@@ -51,18 +50,12 @@ def _env_bool(name: str, default: bool) -> bool:
 
 @dataclass(frozen=True)
 class RedisSettings:
-    """Redis connection details, resolved from either REDIS_URL or host/port pairs."""
-
     host: str = "localhost"
     port: int = 6379
     password: str | None = None
     db: int = 0
-    # Kept short: this connection is made during startup while a platform health
-    # check is already probing the port, so long retries delay the first response.
     connect_timeout: float = 2.0
     max_retries: int = 2
-    # False when no Redis variable was set. Nobody asked for Redis, so startup
-    # must not be spent retrying a default address that cannot succeed.
     configured: bool = False
 
     @classmethod
@@ -70,7 +63,6 @@ class RedisSettings:
         timeout = _env_float("REDIS_CONNECT_TIMEOUT", 2.0)
         retries = _env_int("REDIS_MAX_RETRIES", 2)
 
-        # Managed Redis add-ons (Railway, Render, Upstash) expose a single URL.
         url = os.environ.get("REDIS_URL") or os.environ.get("REDIS_PRIVATE_URL")
         if url:
             parsed = urlparse(url)
@@ -85,13 +77,11 @@ class RedisSettings:
             )
 
         host = _env_str("REDIS_HOST", "localhost")
-        # Railway injects RAILWAY_ENVIRONMENT. A leftover REDIS_HOST=localhost from
-        # an old .env copy cannot succeed there and delayed health checks enough
-        # to keep production on the previous (empty-orderbook) deploy.
         on_railway = bool(
             os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_PROJECT_ID")
         )
         configured = bool(os.environ.get("REDIS_HOST"))
+        # localhost redis never exists on railway, ignore leftover env
         if on_railway and host in {"localhost", "127.0.0.1"}:
             configured = False
 
@@ -108,20 +98,15 @@ class RedisSettings:
 
 @dataclass(frozen=True)
 class FeedSettings:
-    """Controls where the dashboard gets order book frames from."""
-
     source: str = FEED_AUTO
     websocket_uri: str = DEFAULT_WEBSOCKET_URI
     symbol: str = "BTC-USDT"
     exchange: str = "SIMULATED"
-    # Seconds without a frame before the embedded fallback source takes over.
     stale_after_seconds: float = 6.0
     synthetic_interval_seconds: float = 1.0
     synthetic_start_price: float = 65000.0
     synthetic_volatility: float = 0.0009
     synthetic_depth: int = 15
-    # Typical top-of-book spread in basis points (1 bp = 0.01%). Liquid crypto
-    # pairs sit near 1 bp, so the default keeps cost estimates believable.
     synthetic_spread_bps: float = 1.0
 
     @classmethod
@@ -145,8 +130,6 @@ class FeedSettings:
 
 @dataclass(frozen=True)
 class StockFeedSettings:
-    """Settings for the optional stock quote feeder process."""
-
     symbol: str = "AAPL"
     provider: str = "finnhub"
     poll_interval: int = 15
@@ -166,14 +149,11 @@ class StockFeedSettings:
 
 @dataclass(frozen=True)
 class Settings:
-    """Top-level application settings."""
-
     host: str = "0.0.0.0"
     port: int = 8050
     debug: bool = False
     log_level: str = "INFO"
     models_dir: str | None = None
-    # Health check reports market data as stale past this age.
     health_stale_after_seconds: float = 30.0
     redis: RedisSettings = field(default_factory=RedisSettings)
     feed: FeedSettings = field(default_factory=FeedSettings)

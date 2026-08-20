@@ -72,7 +72,6 @@ def test_orderbook_frames_returns_dataframes(market):
 
 
 def test_concurrent_writes_and_reads_stay_consistent(sample_orderbook):
-    """Readers must never see a partially applied book."""
     state = MarketState(TradeSimulator())
     state.apply_frame(sample_orderbook)
     errors: list[Exception] = []

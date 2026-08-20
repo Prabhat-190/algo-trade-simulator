@@ -16,7 +16,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 3.11 matches the container image; 3.12 guards against upcoming runtimes.
         python-version: ["3.11", "3.12"]
 
     steps:
@@ -61,7 +60,6 @@ jobs:
         run: |
           docker run -d --name sim -p 8080:8080 -e PORT=8080 algo-trade-simulator:ci
 
-          # The embedded feed must populate the book with no Redis and no API keys.
           for attempt in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8080/readyz > /dev/null 2>&1; then
               echo "Container is ready after ${attempt} attempt(s)"
