@@ -66,18 +66,15 @@ def test_unknown_side_rejected(loaded_simulator):
 
 
 def test_cost_grows_with_order_size(loaded_simulator):
-    """Slippage and impact must scale with size, not sit at a flat notional %."""
     small = loaded_simulator.simulate_market_order(side="buy", quantity=0.001)
     large = loaded_simulator.simulate_market_order(side="buy", quantity=1.0)
 
     assert large["slippage"] > small["slippage"]
     assert large["market_impact"]["total_impact"] > small["market_impact"]["total_impact"]
-    # A bigger order is worse per dollar traded, not merely worse in absolute terms.
     assert large["net_cost_percentage"] > small["net_cost_percentage"]
 
 
 def test_small_order_cost_is_dominated_by_fees(loaded_simulator):
-    """A tiny order should cost roughly the fee rate, not several percent."""
     result = loaded_simulator.simulate_market_order(side="buy", quantity=0.0001)
 
     assert result["net_cost_percentage"] < 0.5

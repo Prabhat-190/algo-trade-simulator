@@ -1,4 +1,4 @@
-"""Tests for environment-driven configuration."""
+"""Config / env var tests."""
 from __future__ import annotations
 
 import pytest
@@ -15,7 +15,7 @@ from trading.src.config import (
 
 @pytest.fixture(autouse=True)
 def clean_env(monkeypatch):
-    """Remove every variable the config reads so defaults are observable."""
+    """Clear config-related env so defaults are actually defaults."""
     for name in (
         "HOST", "PORT", "DEBUG", "LOG_LEVEL", "MODELS_DIR", "HEALTH_STALE_AFTER_SECONDS",
         "REDIS_URL", "REDIS_PRIVATE_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD",
@@ -36,7 +36,7 @@ def test_defaults_are_deployment_safe():
     assert settings.host == "0.0.0.0"
     assert settings.port == 8050
     assert settings.debug is False
-    # "auto" is what keeps a single-service deploy populated.
+    # auto keeps a single-service deploy populated
     assert settings.feed.source == FEED_AUTO
     assert settings.feed.websocket_uri == DEFAULT_WEBSOCKET_URI
 
@@ -65,11 +65,6 @@ def test_debug_flag_parsing(monkeypatch, value, expected):
 
 
 def test_redis_is_not_configured_by_default():
-    """Nothing set means Redis must not be attempted at all.
-
-    Retrying an unconfigured default delayed the first response by ~11s and made
-    platform health checks fail the deploy.
-    """
     settings = RedisSettings.from_env()
 
     assert settings.configured is False
@@ -88,13 +83,11 @@ def test_setting_redis_url_marks_it_configured(monkeypatch):
 
 
 def test_redis_port_alone_does_not_enable_redis(monkeypatch):
-    """A stray REDIS_PORT should not trigger connection attempts on localhost."""
     monkeypatch.setenv("REDIS_PORT", "6379")
     assert RedisSettings.from_env().configured is False
 
 
 def test_railway_ignores_localhost_redis_host(monkeypatch):
-    """Leftover REDIS_HOST=localhost on Railway must not block startup."""
     monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
     monkeypatch.setenv("REDIS_HOST", "localhost")
     settings = RedisSettings.from_env()

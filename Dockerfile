@@ -10,8 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Dependencies are installed before the source is copied so that code changes do
-# not invalidate the (slow) dependency layer.
+# cache deps unless requirements.txt changes
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -25,14 +24,7 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD python -c "import os,urllib.request; urllib.request.urlopen(f\"http://127.0.0.1:{os.environ['PORT']}/healthz\", timeout=5)" || exit 1
 
-# gthread suits this workload: the work is I/O bound, and each worker runs its own
-# background feed threads alongside request handling.
-#
-# One worker by default, threads instead. Every worker holds a separate copy of the
-# simulator and of in-memory project storage, so with more than one worker and no
-# Redis a saved project would appear or vanish depending on which worker answered.
-# A single worker also roughly halves the pandas/sklearn memory footprint, which
-# matters on small instances. Scale out with Redis configured, not without.
+# 1 worker - each worker has its own in-memory state
 CMD ["sh", "-c", "exec gunicorn \
     --bind 0.0.0.0:${PORT} \
     --workers ${WEB_CONCURRENCY} \

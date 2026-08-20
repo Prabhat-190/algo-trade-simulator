@@ -1,26 +1,25 @@
-/* Dark glassmorphic theme for the trade simulator dashboard.
-   Dash serves everything in this folder automatically. */
+/* dashboard theme */
 
 :root {
-    --bg-deep-obsidian: #04060a;
-    --bg-blur-card: rgba(13, 20, 34, 0.65);
-    --bg-input-focus: rgba(24, 38, 58, 0.85);
-    --border-slate-glass: rgba(255, 255, 255, 0.08);
-    --border-slate-glow: rgba(0, 229, 255, 0.5);
+    --bg: #04060a;
+    --card-bg: rgba(13, 20, 34, 0.65);
+    --input-focus: rgba(24, 38, 58, 0.85);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hi: rgba(0, 229, 255, 0.5);
 
-    --cyber-cyan: #00e5ff;
-    --neon-green: #00e676;
-    --neon-red: #ff1744;
-    --neon-gold: #ffd600;
-    --neon-magenta: #ff33ff;
-    --text-premium-white: #ffffff;
-    --text-silver-gray: #b0c4de;
-    --text-muted-dim: #64748b;
+    --accent: #00e5ff;
+    --green: #00e676;
+    --red: #ff1744;
+    --yellow: #ffd600;
+    --pink: #ff33ff;
+    --text: #ffffff;
+    --muted: #b0c4de;
+    --dim: #64748b;
 }
 
 body {
-    background: fixed radial-gradient(circle at 50% 15%, #0a1626 0%, var(--bg-deep-obsidian) 85%) !important;
-    color: var(--text-premium-white) !important;
+    background: fixed radial-gradient(circle at 50% 15%, #0a1626 0%, var(--bg) 85%) !important;
+    color: var(--text) !important;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     margin: 0;
     padding: 0;
@@ -28,8 +27,7 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* Layout utilities used by dash-bootstrap-components. Kept in this file so the
-   dashboard does not depend on a CDN that Railway's HTTPS origin can block. */
+/* bootstrap-ish layout helpers (so we dont need the cdn) */
 .container, .container-fluid {
     width: 100%;
     padding-right: 16px;
@@ -66,7 +64,7 @@ body {
 .mb-3 { margin-bottom: 1rem; }
 .mb-4 { margin-bottom: 1.5rem; }
 .mt-4 { margin-top: 1.5rem; }
-.text-muted { color: var(--text-muted-dim) !important; }
+.text-muted { color: var(--dim) !important; }
 .btn {
     display: inline-block;
     border: 0;
@@ -84,7 +82,7 @@ body {
 .btn-primary:hover { filter: brightness(1.08); }
 .btn-secondary {
     background: rgba(176, 196, 222, 0.12);
-    color: var(--text-premium-white);
+    color: var(--text);
     border: 1px solid rgba(176, 196, 222, 0.35);
 }
 .d-block { display: block; }
@@ -96,7 +94,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-deep-obsidian);
+    background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -105,12 +103,9 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--cyber-cyan);
+    background: var(--accent);
 }
 
-/* ==========================================================================
-   Header
-   ========================================================================== */
 
 .app-header {
     display: flex;
@@ -129,7 +124,7 @@ body {
 }
 
 .app-subtitle {
-    color: var(--text-silver-gray);
+    color: var(--muted);
     font-size: 13px;
     margin: 4px 0 0;
 }
@@ -141,25 +136,22 @@ body {
     letter-spacing: 1px;
     padding: 8px 14px;
     border-radius: 999px;
-    border: 1px solid var(--border-slate-glass);
+    border: 1px solid var(--border);
     background: rgba(4, 6, 10, 0.6);
-    color: var(--text-silver-gray);
+    color: var(--muted);
 }
 
-/* ==========================================================================
-   Cards
-   ========================================================================== */
 
 .card {
-    background: var(--bg-blur-card) !important;
+    background: var(--card-bg) !important;
     backdrop-filter: blur(25px) saturate(190%) !important;
     -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
-    border: 1px solid var(--border-slate-glass) !important;
+    border: 1px solid var(--border) !important;
     border-radius: 14px !important;
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65) !important;
     margin-bottom: 24px;
     opacity: 1;
-    animation: smoothSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeup 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                 border-color 0.3s ease !important;
@@ -176,13 +168,13 @@ body {
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 50px 0 rgba(0, 229, 255, 0.2) !important;
-    border-color: var(--border-slate-glow) !important;
+    border-color: var(--border-hi) !important;
 }
 
 .card-header {
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%) !important;
-    border-bottom: 1px solid var(--border-slate-glass) !important;
-    color: var(--cyber-cyan) !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--accent) !important;
     font-size: 13px !important;
     font-weight: 700 !important;
     text-transform: uppercase;
@@ -193,16 +185,16 @@ body {
 }
 
 .card-body {
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
 .card-body p {
-    color: var(--text-premium-white);
+    color: var(--text);
 }
 
 .card-body h5,
 .card-body h4 {
-    color: var(--text-silver-gray) !important;
+    color: var(--muted) !important;
     font-weight: 600 !important;
     font-size: 13px !important;
     text-transform: uppercase;
@@ -213,12 +205,9 @@ body {
 
 #project-status,
 .text-muted {
-    color: var(--text-silver-gray) !important;
+    color: var(--muted) !important;
 }
 
-/* ==========================================================================
-   Metric readouts
-   ========================================================================== */
 
 .metric-value,
 #connection-status,
@@ -230,43 +219,43 @@ body {
     padding: 10px 14px;
     background: rgba(4, 6, 10, 0.6) !important;
     border-radius: 8px;
-    border-left: 4px solid var(--cyber-cyan);
+    border-left: 4px solid var(--accent);
     margin-bottom: 14px;
     display: block;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 #slippage-output {
-    border-left-color: var(--cyber-cyan);
-    color: var(--cyber-cyan) !important;
+    border-left-color: var(--accent);
+    color: var(--accent) !important;
 }
 
 #fees-output {
-    border-left-color: var(--neon-gold);
-    color: var(--neon-gold) !important;
+    border-left-color: var(--yellow);
+    color: var(--yellow) !important;
 }
 
 #market-impact-output {
-    border-left-color: var(--neon-red);
-    color: var(--neon-red) !important;
+    border-left-color: var(--red);
+    color: var(--red) !important;
 }
 
 #net-cost-output {
     border-left-color: #e040fb;
-    color: var(--neon-magenta) !important;
+    color: var(--pink) !important;
     font-size: 18px !important;
     background: rgba(224, 64, 251, 0.08) !important;
     box-shadow: 0 0 15px rgba(224, 64, 251, 0.15);
 }
 
 #maker-taker-output {
-    border-left-color: var(--text-silver-gray);
-    color: var(--text-premium-white) !important;
+    border-left-color: var(--muted);
+    color: var(--text) !important;
 }
 
 #latency-output {
-    border-left-color: var(--neon-green);
-    color: var(--neon-green) !important;
+    border-left-color: var(--green);
+    color: var(--green) !important;
 }
 
 /* Live market ticker strip */
@@ -277,7 +266,7 @@ body {
 
 .ticker-label {
     display: block;
-    color: var(--text-muted-dim);
+    color: var(--dim);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -289,22 +278,19 @@ body {
     font-family: 'SF Mono', Consolas, Menlo, monospace;
     font-size: 20px;
     font-weight: 700;
-    color: var(--text-premium-white);
+    color: var(--text);
 }
 
-.ticker-value.positive { color: var(--neon-green); }
-.ticker-value.negative { color: var(--neon-red); }
+.ticker-value.positive { color: var(--green); }
+.ticker-value.negative { color: var(--red); }
 
-/* ==========================================================================
-   Animations
-   ========================================================================== */
 
-@keyframes smoothSlideUp {
+@keyframes fadeup {
     0% { opacity: 0; transform: translateY(22px) scale(0.97); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes telemetryPulseRadar {
+@keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(0, 230, 114, 0.6); }
     70% { box-shadow: 0 0 0 12px rgba(0, 230, 114, 0); }
     100% { box-shadow: 0 0 0 0 rgba(0, 230, 114, 0); }
@@ -313,23 +299,20 @@ body {
 .live-status-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--neon-green);
+    background-color: var(--green);
     border-radius: 50%;
     display: inline-block;
     margin-right: 12px;
-    animation: telemetryPulseRadar 2.4s infinite;
+    animation: pulse 2.4s infinite;
 }
 
-/* ==========================================================================
-   Form controls
-   ========================================================================== */
 
 input,
 .form-control {
     background-color: rgba(4, 6, 10, 0.8) !important;
     backdrop-filter: blur(4px);
-    border: 1px solid var(--border-slate-glass) !important;
-    color: var(--text-premium-white) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
     border-radius: 6px !important;
     height: 40px !important;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -337,15 +320,15 @@ input,
 
 input:focus,
 .form-control:focus {
-    border-color: var(--cyber-cyan) !important;
-    background-color: var(--bg-input-focus) !important;
+    border-color: var(--accent) !important;
+    background-color: var(--input-focus) !important;
     box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
     outline: none;
     color: #ffffff !important;
 }
 
 label {
-    color: var(--text-silver-gray) !important;
+    color: var(--muted) !important;
     font-weight: 600;
     font-size: 12px;
     text-transform: uppercase;
@@ -353,20 +336,13 @@ label {
     margin-bottom: 6px;
 }
 
-/* Dropdowns.
-   Dash 4 rebuilt dcc.Dropdown on Radix, so the react-select class names
-   (.Select-control, .Select-menu-outer, .VirtualizedSelectOption) that older
-   guides suggest no longer exist and styling them silently does nothing.
-   The class names below are the ones Dash 4 actually renders.
-
-   These rules are deliberately NOT scoped under .card-body: the open menu is
-   portalled to the end of <body>, so a descendant selector would never match. */
+/* dash 4 dropdown classes */
 .dash-dropdown,
 .dash-dropdown-trigger {
     background-color: rgba(9, 15, 26, 0.92) !important;
     border: 1px solid rgba(176, 196, 222, 0.35) !important;
     border-radius: 6px !important;
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
     min-height: 40px !important;
     transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
@@ -375,7 +351,7 @@ label {
 .dash-dropdown-trigger:hover,
 .dash-dropdown[data-state="open"],
 .dash-dropdown:focus-within {
-    border-color: var(--cyber-cyan) !important;
+    border-color: var(--accent) !important;
     box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18) !important;
 }
 
@@ -384,31 +360,30 @@ label {
 .dash-dropdown-value-count,
 .dash-dropdown-trigger-icon,
 .dash-dropdown-search-icon {
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
 .dash-dropdown-placeholder {
-    color: var(--text-muted-dim) !important;
+    color: var(--dim) !important;
 }
 
-/* The search box the user types into. Left unstyled it inherits a dark colour
-   on a dark surface, which is invisible. */
+/* search input inside the dropdown */
 .dash-dropdown-search,
 .dash-dropdown-search input,
 .dash-dropdown-search-container input {
     background-color: rgba(4, 6, 10, 0.85) !important;
     border: 1px solid rgba(176, 196, 222, 0.25) !important;
     border-radius: 4px !important;
-    caret-color: var(--cyber-cyan) !important;
-    color: var(--text-premium-white) !important;
+    caret-color: var(--accent) !important;
+    color: var(--text) !important;
 }
 
 .dash-dropdown-search::placeholder,
 .dash-dropdown-search input::placeholder {
-    color: var(--text-muted-dim) !important;
+    color: var(--dim) !important;
 }
 
-/* Portalled menu surface. */
+/* dropdown menu */
 .dash-dropdown-content,
 .dash-dropdown-options,
 .dash-dropdown-grid-container {
@@ -416,30 +391,29 @@ label {
     border: 1px solid rgba(176, 196, 222, 0.3) !important;
     border-radius: 6px !important;
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65) !important;
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
 .dash-dropdown-option {
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
 .dash-dropdown-option:hover,
 .dash-dropdown-option[data-highlighted],
 .dash-dropdown-option[data-state="checked"] {
     background-color: rgba(0, 229, 255, 0.18) !important;
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
 .dash-dropdown-actions,
 .dash-dropdown-action-button,
 .dash-dropdown-clear {
-    color: var(--cyber-cyan) !important;
+    color: var(--accent) !important;
 }
 
-/* Sliders. As with the dropdown, Dash 4 replaced rc-slider, so the .rc-slider-*
-   names older guides use are inert. These are the names Dash 4 emits. */
+/* dash 4 slider */
 .dash-slider-mark {
-    color: var(--text-silver-gray) !important;
+    color: var(--muted) !important;
 }
 
 .dash-slider-track {
@@ -447,12 +421,12 @@ label {
 }
 
 .dash-slider-range {
-    background-color: var(--cyber-cyan) !important;
+    background-color: var(--accent) !important;
 }
 
 .dash-slider-thumb {
-    background-color: var(--bg-deep-obsidian) !important;
-    border: 2px solid var(--cyber-cyan) !important;
+    background-color: var(--bg) !important;
+    border: 2px solid var(--accent) !important;
     box-shadow: 0 0 8px rgba(0, 229, 255, 0.5) !important;
 }
 
@@ -463,12 +437,9 @@ label {
 
 .dash-slider-tooltip {
     background-color: rgba(9, 15, 26, 0.98) !important;
-    color: var(--text-premium-white) !important;
+    color: var(--text) !important;
 }
 
-/* ==========================================================================
-   Simulation history table
-   ========================================================================== */
 
 .history-table {
     width: 100%;
@@ -479,18 +450,18 @@ label {
 
 .history-table th {
     text-align: left;
-    color: var(--text-muted-dim);
+    color: var(--dim);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: 11px;
     padding: 8px 10px;
-    border-bottom: 1px solid var(--border-slate-glass);
+    border-bottom: 1px solid var(--border);
 }
 
 .history-table td {
     padding: 8px 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    color: var(--text-premium-white);
+    color: var(--text);
 }
 
 .history-table tr:hover td {
@@ -498,13 +469,13 @@ label {
 }
 
 .bid-row-update {
-    color: var(--neon-green) !important;
+    color: var(--green) !important;
     font-family: 'SF Mono', monospace;
     font-weight: 600;
 }
 
 .ask-row-update {
-    color: var(--neon-red) !important;
+    color: var(--red) !important;
     font-family: 'SF Mono', monospace;
     font-weight: 600;
 }

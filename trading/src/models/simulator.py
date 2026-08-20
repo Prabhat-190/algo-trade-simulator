@@ -16,9 +16,7 @@ from .slippage_model import SlippageModel
 
 logger = logging.getLogger(__name__)
 
-# Order book depth is a snapshot, not a daily volume. Almgren-Chriss needs an
-# average daily volume, so visible depth is scaled by this factor to approximate
-# one. It is a rough proxy, exposed here rather than buried as a magic number.
+# Orderbook depth is not ADV; scale it so Almgren-Chriss has something sane.
 DEPTH_TO_DAILY_VOLUME_FACTOR = 100
 
 # An almost entirely one-sided book usually means bad data or spoofing.

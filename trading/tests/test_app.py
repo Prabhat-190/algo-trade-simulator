@@ -1,4 +1,4 @@
-"""End-to-end tests for the composed application and its HTTP routes."""
+"""App / health endpoint tests."""
 from __future__ import annotations
 
 import time
@@ -10,7 +10,7 @@ from trading.src.app import create_app
 
 @pytest.fixture(scope="module")
 def app(offline_settings_module):
-    """One app with live synthetic feeds, shared by the tests in this module."""
+    """App instance with synthetic feed running."""
     instance = create_app(offline_settings_module)
     # Give the synthetic feed time to publish a first frame.
     deadline = time.time() + 5
@@ -43,17 +43,13 @@ def client(app):
 
 
 def test_app_starts_without_redis(app):
-    """Unreachable Redis must degrade to a warning, not a crash."""
+    """Redis down should not crash the app."""
     assert app.redis_client is None
     assert app.project_store is not None
 
 
 def test_app_starts_quickly_when_redis_is_unconfigured(offline_settings_module):
-    """Startup must not block on Redis, or health checks fail the deploy.
-
-    An earlier version retried an unconfigured localhost Redis with backoff,
-    adding roughly 11 seconds before the first response.
-    """
+    """Dont hang on redis if it was never configured."""
     from dataclasses import replace
 
     from trading.src.config import RedisSettings
@@ -107,15 +103,14 @@ def test_index_page_renders(client):
 
 
 def test_theme_stylesheet_is_served(client, app):
-    # Dash fingerprints asset URLs, so discover the real path from the app config.
+    # Dash fingerprints assets; /assets/theme.css still works
     assets = app.dashboard.app.config.assets_folder
     assert assets.endswith("assets")
 
     response = client.get("/assets/theme.css")
     assert response.status_code == 200
     body = response.get_data(as_text=True)
-    assert "--cyber-cyan" in body
-    # Layout must not depend on a Bootstrap CDN that production HTTPS can block.
+    assert "--accent" in body
     assert ".container-fluid" in body
     assert ".btn-primary" in body
 
@@ -129,12 +124,12 @@ def test_simulation_runs_against_live_synthetic_book(app):
 
     assert "error" not in result
     assert result["net_cost"] > 0
-    # A $100 order should cost a fraction of a percent, not several percent.
+    # $100 order should be a fraction of a percent, not like 5%
     assert result["net_cost_percentage"] < 1.0
 
 
 def test_readyz_is_unavailable_when_data_is_stale(offline_settings_module):
-    """A dashboard with feeds disabled must fail readiness while still serving /healthz."""
+    """No feed => not ready."""
     instance = create_app(offline_settings_module, start_feeds=False)
     try:
         client = instance.server.test_client()

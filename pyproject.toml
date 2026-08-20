@@ -11,8 +11,6 @@ exclude = [
     ".venv",
     "build",
     "dist",
-    # Scaffolded but never wired into the app, and not tracked in git. Excluded so
-    # unfinished work does not gate linting; delete or integrate them deliberately.
     "trading/src/models/user_account.py",
     "trading/src/models/option_chain.py",
 ]
@@ -29,9 +27,9 @@ select = [
     "SIM",  # simplify
 ]
 ignore = [
-    "E501",    # line length is handled by the formatter
-    "B008",    # Depends()-style default calls are not used here
-    "SIM108",  # ternaries are not always clearer
+    "E501",
+    "B008",
+    "SIM108",
 ]
 
 [tool.ruff.lint.per-file-ignores]

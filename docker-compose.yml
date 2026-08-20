@@ -1,9 +1,8 @@
-# Local development stack.
-#
-#   docker compose up                      dashboard only (embedded synthetic feed)
-#   docker compose --profile redis up       add Redis for shared project storage
-#   docker compose --profile live up        add the live crypto WebSocket feeder
-#   docker compose --profile stocks up      add the stock quote feeder (needs an API key)
+# local stack
+# docker compose up
+# docker compose --profile redis up
+# docker compose --profile live up
+# docker compose --profile stocks up
 
 services:
   dashboard:
@@ -15,8 +14,6 @@ services:
       WEB_CONCURRENCY: 1
       GUNICORN_THREADS: 8
       LOG_LEVEL: INFO
-      # "auto" consumes Redis when a feeder is publishing and falls back to the
-      # embedded synthetic feed otherwise, so this works with or without profiles.
       FEED_SOURCE: auto
       REDIS_HOST: redis
       REDIS_PORT: 6379
