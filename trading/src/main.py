@@ -1,20 +1,13 @@
-"""Entrypoint for the dashboard.
-
-Gunicorn imports ``server`` from this module:
-
-    gunicorn trading.src.main:server
-
-Running it directly starts the Dash development server instead.
 """
-from __future__ import annotations
+Dashboard entrypoint.
 
+gunicorn trading.src.main:server
+"""
 import argparse
 
 from .app import create_app
 
-# Gunicorn needs a module-level WSGI callable, so the app is built on import.
-# Each worker therefore gets its own instance with its own feed threads, which is
-# why the synthetic fallback feeds in-process instead of publishing to Redis.
+# gunicorn imports this module, so the app has to exist at import time
 _app = create_app()
 server = _app.server
 

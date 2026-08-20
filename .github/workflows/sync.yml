@@ -14,8 +14,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Skip silently rather than failing the run for anyone who has not set
-          # up a Space. Primary deployment is Railway (see README).
+          # skip if hf secrets arent set
           if [ -z "$HF_TOKEN" ] || [ -z "${{ vars.HF_SPACE }}" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "HF_TOKEN or HF_SPACE is not set; skipping Hugging Face sync."

@@ -1,24 +1,11 @@
-# Railway deployment config.
-#
-# This deploys as a SINGLE service with no add-ons required. The dashboard runs
-# its own embedded market data feed (FEED_SOURCE=auto), so there is nothing else
-# to provision to get a working URL.
-#
-# Optional upgrades, both described in the README:
-#   * Add a Railway Redis database to share saved projects across replicas.
-#   * Add a second service running `python -m trading.data_feeder` for live
-#     exchange data; the dashboard prefers it automatically over the embedded feed.
+# railway - single service, dockerfile build
 
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-# Left unset so the Dockerfile CMD is used. That keeps one definition of how the
-# server starts, instead of two that can drift apart.
 healthcheckPath = "/healthz"
-# Cold start has to import pandas, numpy, scikit-learn and Dash before the first
-# response, so allow generous headroom here.
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10

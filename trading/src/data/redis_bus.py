@@ -1,6 +1,6 @@
-"""Redis connection and order book pub/sub helpers shared by the app and feeders."""
-from __future__ import annotations
-
+"""
+Redis helpers for orderbook pub/sub.
+"""
 import json
 import logging
 import time
@@ -26,16 +26,9 @@ def latest_key(symbol: str) -> str:
 
 
 def connect(settings: RedisSettings, label: str = "redis") -> redis.Redis | None:
-    """Connect to Redis with exponential backoff.
-
-    Returns ``None`` instead of raising when Redis is unreachable so that every
-    caller can degrade to in-process behaviour rather than crashing.
-    """
+    """Try redis a few times. Returns None if its down so the app can still boot."""
     if not settings.configured:
-        logger.info(
-            "[%s] No Redis configured (set REDIS_URL or REDIS_HOST to enable it); "
-            "using in-process state.", label,
-        )
+        logger.info("[%s] Redis not configured, running in-memory", label)
         return None
 
     delay = 1.0
@@ -64,12 +57,11 @@ def connect(settings: RedisSettings, label: str = "redis") -> redis.Redis | None
                 time.sleep(delay)
                 delay *= 2
 
-    logger.warning("[%s] Redis unavailable; continuing without it.", label)
+    logger.warning("[%s] Redis unavailable, continuing without it", label)
     return None
 
 
 def publish_orderbook(client: redis.Redis | None, orderbook: dict) -> bool:
-    """Publish a frame to its stream and cache it as the latest snapshot."""
     if client is None:
         return False
 
@@ -89,11 +81,6 @@ def subscribe_orderbooks(
     on_frame: Callable[[dict], None],
     stop_check: Callable[[], bool] | None = None,
 ) -> None:
-    """Block on the order book stream, invoking ``on_frame`` per message.
-
-    Reconnects on Redis errors so a transient outage does not silently kill the
-    background thread that owns this loop.
-    """
     while stop_check is None or not stop_check():
         try:
             pubsub = client.pubsub(ignore_subscribe_messages=True)
@@ -109,7 +96,7 @@ def subscribe_orderbooks(
                 try:
                     on_frame(json.loads(message["data"]))
                 except (ValueError, TypeError) as exc:
-                    logger.error("Discarding malformed order book frame: %s", exc)
+                    logger.error("Bad orderbook frame, skipping: %s", exc)
         except (RedisConnectionError, RedisError, TimeoutError) as exc:
-            logger.error("Redis subscription dropped (%s); retrying in 5s", exc)
+            logger.error("Redis subscription dropped (%s), retrying in 5s", exc)
             time.sleep(5)

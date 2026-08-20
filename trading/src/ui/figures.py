@@ -1,7 +1,5 @@
-"""Plotly figure builders for the dashboard.
-
-Kept separate from layout and callbacks so charts can be unit tested without
-constructing a Dash app.
+"""
+Plotly charts used by the dashboard.
 """
 from __future__ import annotations
 
@@ -18,7 +16,7 @@ COLOR_MUTED = "#b0c4de"
 
 
 def apply_theme(fig: go.Figure) -> go.Figure:
-    """Apply the dark dashboard theme so charts stay readable on the dark page."""
+    """Dark theme so charts dont look like a white box on the page."""
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(4,6,10,0.72)",
@@ -44,7 +42,7 @@ def apply_theme(fig: go.Figure) -> go.Figure:
 
 
 def placeholder(message: str) -> go.Figure:
-    """A themed empty chart, so the card is never a blank white box."""
+    """Empty chart with a message in the middle."""
     fig = go.Figure()
     fig.add_annotation(
         text=message,
@@ -63,11 +61,7 @@ def placeholder(message: str) -> go.Figure:
 
 
 def depth_chart(asks_df: pd.DataFrame, bids_df: pd.DataFrame) -> go.Figure:
-    """Cumulative depth ("staircase") view of the book.
-
-    Cumulative depth shows how far a given order size would walk the book,
-    which is what the cost model is actually estimating.
-    """
+    """Cumulative depth chart (how far an order would walk the book)."""
     if asks_df.empty and bids_df.empty:
         return placeholder("Waiting for order book data")
 
@@ -105,7 +99,7 @@ def depth_chart(asks_df: pd.DataFrame, bids_df: pd.DataFrame) -> go.Figure:
 
 
 def cost_breakdown_chart(result: dict) -> go.Figure:
-    """Donut chart splitting net cost into fees, slippage and market impact."""
+    """Fees vs slippage vs impact."""
     values = [
         result["fees"]["total_fee"],
         result["slippage"],
@@ -128,7 +122,7 @@ def cost_breakdown_chart(result: dict) -> go.Figure:
 
 
 def price_history_chart(history: list[tuple[float, float]]) -> go.Figure:
-    """Mid price over the session, so a live feed is visibly live."""
+    """Mid price line over the session."""
     if len(history) < 2:
         return placeholder("Collecting price history")
 
