@@ -1,0 +1,183 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[top=0.26in,bottom=0.24in,left=0.38in,right=0.38in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{microtype}
+
+\pagenumbering{gobble}
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\urlstyle{same}
+\sloppy
+\emergencystretch=2em
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+\titleformat{\section}
+  {\normalsize\scshape\raggedright}
+  {}
+  {0em}
+  {}
+  [\vspace{-2pt}\titlerule]
+\titlespacing*{\section}{0pt}{7pt}{3.5pt}
+
+\newcommand{\resumeItem}[1]{\item #1}
+
+\newcommand{\projectHeader}[4]{
+  \begin{tabularx}{\textwidth}{@{}Xr@{}}
+    \textbf{#1} & \href{#3}{#4} \\
+    \multicolumn{2}{@{}l@{}}{\textit{#2}}
+  \end{tabularx}
+}
+
+\newcommand{\ongoingHeader}[3]{
+  \begin{tabularx}{\textwidth}{@{}Xr@{}}
+    \textbf{#1} & \textit{#3} \\
+    \multicolumn{2}{@{}l@{}}{\textit{#2}}
+  \end{tabularx}
+}
+
+\newcommand{\roleHeader}[4]{
+  \textbf{#1} \hfill \textit{#2} \\
+  \textit{#3} \hfill #4
+}
+
+\setlist[itemize]{
+  leftmargin=1.15em,
+  itemsep=1.8pt,
+  topsep=0.8pt,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+\begin{document}
+\fontsize{9.0}{10.7}\selectfont
+
+\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}X>{\raggedleft\arraybackslash}p{0.36\textwidth}@{}}
+  \includegraphics[width=0.62in]{IIT_KGP.png} &
+  \begin{tabular}[c]{@{}l@{}}
+    {\Large \textbf{Prabhat Kumar}}\\
+    B.S. Mathematics and Computing\\
+    Indian Institute of Technology, Kharagpur
+  \end{tabular}
+  &
+  \begin{tabular}[c]{@{}r@{}}
+    +91-7367905043\\
+    \href{mailto:sauravsandilya7367905043@gmail.com}{sauravsandilya7367905043@gmail.com}\\
+    \href{https://www.linkedin.com/in/prabhat-kumar-654b7b413}{linkedin.com/in/prabhat-kumar-654b7b413}\\
+    \href{https://github.com/Prabhat-190}{github.com/Prabhat-190}
+  \end{tabular}
+\end{tabularx}
+
+\section{Education}
+
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+\textbf{Indian Institute of Technology, Kharagpur} & \textbf{CGPA: 7.29}\\
+Bachelor of Science in Mathematics and Computing & \\[1pt]
+\textbf{Jawahar Navodaya Vidyalaya, Supaul} (CBSE) & \textbf{77.8\%}\\
+Senior Secondary (Class 12) &
+\end{tabularx}
+
+\section{Experience}
+
+\roleHeader{Software Engineering Intern}{May 2026 -- July 2026}{Paycraft}{\href{https://github.com/Prabhat-190/pbf-generator}{github.com/Prabhat-190/pbf-generator}}
+
+\begin{itemize}
+  \resumeItem{Built a \textbf{Java 21 / Spring Boot 3} settlement service that generates ABT-to-NLP \textbf{PBF} files in Header--Record--Trailer format, validates transit transactions, and tracks file lifecycle from creation through loyalty callback completion.}
+  \resumeItem{Implemented \textbf{REST APIs} for PBF generation, status lookup, callbacks, and health checks; persisted file metadata, per-record results, and four-digit sequences using \textbf{Spring Data JPA} and \textbf{H2}.}
+  \resumeItem{Engineered the file pipeline: business-rule validation, trailer reconciliation, \textbf{SHA-256} checksums, ZIP packaging, mock \textbf{SFTP} delivery, year/month archival, and a scheduled retry job for failed uploads.}
+  \resumeItem{Added \textbf{SLF4J/Logback} logging with request-id tracing, global exception handling, \textbf{OpenAPI/Swagger} docs, \textbf{JUnit 5} unit and integration tests, and Dockerized the service for Railway deployment.}
+\end{itemize}
+
+\section{Projects}
+
+\ongoingHeader
+{B.Tech Project: Machine Learning based Stock Prediction and Portfolio Optimization}
+{Python, Pandas, NumPy, Scikit-learn, Keras, Time-Series, Matplotlib}
+{Ongoing}
+
+\begin{itemize}
+  \resumeItem{Building a two-stage pipeline that forecasts next-day equity returns from \textbf{NSE/Nifty 50} OHLCV data and technical indicators, then allocates capital with \textbf{mean-variance (Markowitz)} optimization.}
+  \resumeItem{Training and comparing Linear Regression, Random Forest, and \textbf{LSTM} models under walk-forward validation to avoid look-ahead bias; evaluating forecasts with RMSE/MAPE and portfolios with Sharpe ratio and maximum drawdown.}
+  \resumeItem{Engineering SMA, EMA, RSI, MACD, and volatility features; imposing long-only and budget constraints and benchmarking optimized weights against equal-weight and index buy-and-hold strategies.}
+\end{itemize}
+
+\projectHeader
+{Algo Trade Simulator}
+{Python, Dash, Plotly, Redis, WebSockets, Docker, Gunicorn, Nginx}
+{https://algo-trade-simulator-production.up.railway.app/}
+{Live Project}
+
+\begin{itemize}
+  \resumeItem{Developed an \textbf{algorithmic trading simulator} ingesting Level-2 order-book streams over WebSockets to estimate execution cost across slippage, market impact, fees, liquidity, and volatility.}
+  \resumeItem{Designed a \textbf{4-layer Redis Pub/Sub} pipeline for market-data ingestion, order-book processing, cost analysis, and live visualization.}
+  \resumeItem{Deployed with \textbf{Docker, Gunicorn, and Nginx} (multi-worker processing, WebSocket routing, rate limiting, Redis failover) and \textbf{100+ tests} covering simulation, feeds, and persistence.}
+\end{itemize}
+
+\projectHeader
+{Amazon FinAI: Smart Checkout and Conversational RAG Engine}
+{React, Node.js, FastAPI, MongoDB, Redis, ChromaDB, OpenAI, Docker}
+{https://github.com/Prabhat-190/amazon-finai}
+{GitHub}
+
+\begin{itemize}
+  \resumeItem{Built a \textbf{fintech microservice} platform combining payment routing and generative AI for checkout, budget tracking, and assistance.}
+  \resumeItem{Implemented a \textbf{RAG} engine (GPT-4, ChromaDB, tool calling) and ranked payment methods on \textbf{3 Redis signals}: gateway success, cashback, and gift-card expiry.}
+  \resumeItem{Extracted structured discounts from bank offers via \textbf{GPT-4 Vision} and containerized \textbf{3 services} (React, Node.js, FastAPI) with Docker Compose.}
+\end{itemize}
+
+\projectHeader
+{Fraud Shield AI}
+{Python, Scikit-learn, Pandas, NumPy, Streamlit, CCXT}
+{https://fraudsheild-ai-4ruti3ugr9qcuafvmdxekm.streamlit.app/}
+{Live Project}
+
+\begin{itemize}
+  \resumeItem{Built an end-to-end \textbf{fraud detection} system using Random Forest to score transactions on a \textbf{0--100\%} risk scale, with precision-recall threshold tuning to cut false-positive alerts.}
+  \resumeItem{Engineered amount, time, cardholder age, geography, and merchant-category features; deployed a \textbf{Streamlit} dashboard with live scoring and \textbf{CCXT} market-data fallback.}
+\end{itemize}
+
+\section{Technical Skills}
+
+\begin{tabularx}{\textwidth}{@{} l X @{}}
+\textbf{Languages:}
+& Java, Python, C++, JavaScript, SQL \\
+
+\textbf{Backend:}
+& Spring Boot, Spring Data JPA, REST APIs, Node.js, Express.js, FastAPI, WebSocket, Microservices, JUnit, SLF4J \\
+
+\textbf{ML / Data:}
+& Scikit-learn, Keras, Pandas, NumPy, LSTM, Time-Series Forecasting, Portfolio Optimization, Plotly, Dash, Streamlit \\
+
+\textbf{Frontend:}
+& React.js, Next.js, HTML, CSS \\
+
+\textbf{Databases / Tools:}
+& MySQL, MongoDB, Redis, H2, ChromaDB, Docker, Git, GitHub, Postman, Gradle, Gunicorn, Nginx, OpenAPI \\
+
+\textbf{Core CS:}
+& Data Structures and Algorithms, OOP, DBMS, Operating Systems, Computer Networks, System Design
+\end{tabularx}
+
+\section{Achievements}
+
+\begin{itemize}
+  \resumeItem{\textbf{Codeforces Expert} (max rating \textbf{1736}); \textbf{Global Rank 245} among 25,673 participants in Round 1093 (Div. 2).}
+  \resumeItem{Solved \textbf{500+} DSA problems across LeetCode, Codeforces, CodeChef, and HackerRank.}
+  \resumeItem{Awarded the \textbf{Reliance Foundation Undergraduate Scholarship} (top \textbf{0.8\%} of 120,000+ applicants).}
+  \resumeItem{Secured \textbf{Top 8\% in JEE Advanced} and \textbf{Top 1.2\% in JEE Main}; HackerRank Software Engineer Intern Certification.}
+\end{itemize}
+
+\section{Relevant Coursework}
+
+\textbf{CS:} Algorithms, Data Structures, DBMS, File Organization, Computer Organization, Theory of Computation, Big Data Analysis.
+\textbf{Math:} Optimization, Probability and Statistics, Stochastic Processes, Linear Algebra, Discrete Mathematics, Graph Theory.
+
+\end{document}
