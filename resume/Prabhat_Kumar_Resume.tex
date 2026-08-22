@@ -1,24 +1,20 @@
 \documentclass[a4paper,10pt]{article}
 
-\usepackage[top=0.24in,bottom=0.22in,left=0.38in,right=0.38in]{geometry}
+\usepackage[top=0.26in,bottom=0.24in,left=0.40in,right=0.40in]{geometry}
 \usepackage[hidelinks]{hyperref}
 \usepackage{enumitem}
 \usepackage{tabularx}
 \usepackage{titlesec}
 \usepackage{array}
-\usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{microtype}
 
 \pagenumbering{gobble}
 \setlength{\parindent}{0pt}
 \setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.05}
+\renewcommand{\arraystretch}{1.06}
 \urlstyle{same}
-\sloppy
-\emergencystretch=2em
-\hyphenpenalty=10000
-\exhyphenpenalty=10000
+\emergencystretch=1em
 
 \titleformat{\section}
   {\normalsize\scshape\raggedright}
@@ -26,45 +22,41 @@
   {0em}
   {}
   [\vspace{-2pt}\titlerule]
-\titlespacing*{\section}{0pt}{6.5pt}{3pt}
+\titlespacing*{\section}{0pt}{7.5pt}{3.8pt}
 
 \newcommand{\resumeItem}[1]{\item #1}
+\newcommand{\pairItem}[2]{\item \mbox{#1}\\\mbox{#2}}
 
 \newcommand{\projectHeader}[4]{
-  \begin{tabularx}{\textwidth}{@{}Xr@{}}
-    \textbf{#1} & \href{#3}{#4} \\
-    \multicolumn{2}{@{}l@{}}{\textit{#2}}
-  \end{tabularx}
+  \textbf{#1} \hfill \href{#3}{#4}\\
+  \textit{#2}
 }
 
 \newcommand{\ongoingHeader}[3]{
-  \begin{tabularx}{\textwidth}{@{}Xr@{}}
-    \textbf{#1} & \textit{#3} \\
-    \multicolumn{2}{@{}l@{}}{\textit{#2}}
-  \end{tabularx}
+  \textbf{#1} \hfill \textit{#3}\\
+  \textit{#2}
 }
 
 \newcommand{\roleHeader}[4]{
-  \textbf{#1} \hfill \textit{#2} \\
+  \textbf{#1} \hfill \textit{#2}\\
   \textit{#3} \hfill #4
 }
 
 \setlist[itemize]{
   leftmargin=1.15em,
-  itemsep=1.5pt,
-  topsep=0.6pt,
+  itemsep=2.0pt,
+  topsep=0.8pt,
   parsep=0pt,
   partopsep=0pt
 }
 
 \begin{document}
-\fontsize{9.0}{10.45}\selectfont
+\fontsize{9.0}{10.7}\selectfont
 
-\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}X>{\raggedleft\arraybackslash}p{0.36\textwidth}@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}X>{\raggedleft\arraybackslash}p{0.38\textwidth}@{}}
   \includegraphics[width=0.62in]{IIT_KGP.png} &
   \begin{tabular}[c]{@{}l@{}}
     {\Large \textbf{Prabhat Kumar}}\\
-    B.S. Mathematics and Computing\\
     Indian Institute of Technology, Kharagpur
   \end{tabular}
   &
@@ -86,23 +78,31 @@ Bachelor of Science in Mathematics and Computing
 \roleHeader{Software Engineering Intern}{May 2026 -- July 2026}{Paycraft}{\href{https://github.com/Prabhat-190/pbf-generator}{github.com/Prabhat-190/pbf-generator}}
 
 \begin{itemize}
-  \resumeItem{Built a \textbf{Java 21 / Spring Boot 3} settlement service that generates ABT-to-NLP \textbf{PBF} files in Header--Record--Trailer format, validates transit transactions, and tracks file lifecycle from creation through loyalty callback completion.}
-  \resumeItem{Implemented \textbf{REST APIs} for PBF generation, status lookup, callbacks, and health checks; persisted file metadata, per-record results, and four-digit sequences using \textbf{Spring Data JPA} and \textbf{H2}.}
-  \resumeItem{Engineered the file pipeline: business-rule validation, trailer reconciliation, \textbf{SHA-256} checksums, ZIP packaging, mock \textbf{SFTP} delivery, year/month archival, and a scheduled retry job for failed uploads.}
-  \resumeItem{Added \textbf{SLF4J/Logback} logging with request-id tracing, global exception handling, \textbf{OpenAPI/Swagger} docs, \textbf{JUnit 5} unit and integration tests, and Dockerized the service for Railway deployment.}
+  \pairItem
+    {Built a Java 21 Spring Boot service that generates ABT-to-NLP settlement files in Header, Record, and Trailer format.}
+    {Validated transit transactions and tracked every file from creation through loyalty-callback completion.}
+  \pairItem
+    {Designed REST APIs for generation, status lookup, callbacks, and health checks, then stored results with Spring Data JPA.}
+    {Persisted file metadata, per-record outcomes, and four-digit daily sequences in an H2 database.}
+  \pairItem
+    {Implemented trailer checks, SHA-256 checksums, ZIP packaging, mock SFTP delivery, and year-month archival.}
+    {Added SLF4J request-id logging, OpenAPI docs, JUnit 5 tests, and Docker packaging for Railway deployment.}
 \end{itemize}
 
 \section{Projects}
 
 \ongoingHeader
-{B.Tech Project: Machine Learning based Stock Prediction and Portfolio Optimization}
-{Python, Pandas, NumPy, Scikit-learn, Keras, Time-Series, Matplotlib}
+{Bachelor's Thesis Project: Machine Learning-Based Stock Prediction and Portfolio Optimization}
+{Python, Pandas, NumPy, Scikit-learn, Keras, Matplotlib}
 {Ongoing}
 
 \begin{itemize}
-  \resumeItem{Building a two-stage pipeline that forecasts next-day equity returns from \textbf{NSE/Nifty 50} OHLCV data and technical indicators, then allocates capital with \textbf{mean-variance (Markowitz)} optimization.}
-  \resumeItem{Training and comparing Linear Regression, Random Forest, and \textbf{LSTM} models under walk-forward validation to avoid look-ahead bias; evaluating forecasts with RMSE/MAPE and portfolios with Sharpe ratio and maximum drawdown.}
-  \resumeItem{Engineering SMA, EMA, RSI, MACD, and volatility features; imposing long-only and budget constraints and benchmarking optimized weights against equal-weight and index buy-and-hold strategies.}
+  \pairItem
+    {Building a machine learning pipeline that forecasts next-day Nifty 50 returns and then forms an optimized stock portfolio.}
+    {Feeding historical OHLCV prices and technical indicators into the forecast stage before capital is allocated.}
+  \pairItem
+    {Training Linear Regression, Random Forest, and LSTM models with walk-forward validation to block look-ahead leakage.}
+    {Ranking mean-variance portfolios by Sharpe ratio and maximum drawdown against equal-weight and index baselines.}
 \end{itemize}
 
 \projectHeader
@@ -112,21 +112,27 @@ Bachelor of Science in Mathematics and Computing
 {Live Project}
 
 \begin{itemize}
-  \resumeItem{Developed an \textbf{algorithmic trading simulator} ingesting Level-2 order-book streams over WebSockets to estimate execution cost across slippage, market impact, fees, liquidity, and volatility.}
-  \resumeItem{Designed a \textbf{4-layer Redis Pub/Sub} pipeline for market-data ingestion, order-book processing, cost analysis, and live visualization.}
-  \resumeItem{Deployed with \textbf{Docker, Gunicorn, and Nginx} (multi-worker processing, WebSocket routing, rate limiting, Redis failover) and \textbf{100+ tests} covering simulation, feeds, and persistence.}
+  \pairItem
+    {Developed a live trading simulator that reads Level-2 order-book streams and estimates execution cost for market orders.}
+    {Modeled slippage, market impact, exchange fees, liquidity, and volatility inside the cost estimate.}
+  \pairItem
+    {Designed a four-layer Redis publish-subscribe pipeline for ingestion, book updates, cost analysis, and live charts.}
+    {Deployed with Gunicorn and Nginx, added Redis failover, and wrote more than 100 tests for feeds and persistence.}
 \end{itemize}
 
 \projectHeader
-{Amazon FinAI: Smart Checkout and Conversational RAG Engine}
+{Amazon FinAI: Smart Checkout and Conversational Assistant}
 {React, Node.js, FastAPI, MongoDB, Redis, ChromaDB, OpenAI, Docker}
 {https://github.com/Prabhat-190/amazon-finai}
 {GitHub}
 
 \begin{itemize}
-  \resumeItem{Built a \textbf{fintech microservice} platform combining payment routing and generative AI for checkout, budget tracking, and assistance.}
-  \resumeItem{Implemented a \textbf{RAG} engine (GPT-4, ChromaDB, tool calling) and ranked payment methods on \textbf{3 Redis signals}: gateway success, cashback, and gift-card expiry.}
-  \resumeItem{Extracted structured discounts from bank offers via \textbf{GPT-4 Vision} and containerized \textbf{3 services} (React, Node.js, FastAPI) with Docker Compose.}
+  \pairItem
+    {Developed a checkout platform that routes payments and answers user questions with a retrieval-augmented assistant.}
+    {Combined wallet, budget, and policy context so the assistant can return grounded financial answers.}
+  \pairItem
+    {Ranked payment methods by gateway success, cashback, and gift-card expiry using cached Redis signals.}
+    {Extracted discounts from bank-offer images with GPT-4 Vision and ran three services with Docker Compose.}
 \end{itemize}
 
 \projectHeader
@@ -136,39 +142,35 @@ Bachelor of Science in Mathematics and Computing
 {Live Project}
 
 \begin{itemize}
-  \resumeItem{Built an end-to-end \textbf{fraud detection} system using Random Forest to score transactions on a \textbf{0--100\%} risk scale, with precision-recall threshold tuning to cut false-positive alerts.}
-  \resumeItem{Engineered amount, time, cardholder age, geography, and merchant-category features; deployed a \textbf{Streamlit} dashboard with live scoring and \textbf{CCXT} market-data fallback.}
+  \pairItem
+    {Built a fraud detection model that scores each transaction from 0 to 100 percent risk using a Random Forest classifier.}
+    {Tuned the decision threshold on the precision-recall curve so genuine payments are not blocked by false alerts.}
+  \pairItem
+    {Engineered amount, time, cardholder age, location, and merchant-category features for each scored transaction.}
+    {Deployed a Streamlit dashboard for live scoring and used CCXT market data with an automatic offline fallback.}
 \end{itemize}
 
 \section{Technical Skills}
 
-\begin{tabularx}{\textwidth}{@{} l X @{}}
-\textbf{Languages:}
-& Java, Python, C++, JavaScript, SQL, React.js, Next.js, HTML, CSS \\
+\textbf{Languages:} Java, Python, C++, JavaScript, SQL\\
+\textbf{Frontend:} React.js, Next.js, HTML, CSS\\
+\textbf{Backend:} Spring Boot, Spring Data JPA, REST APIs, Node.js, Express.js, FastAPI, WebSocket, Microservices\\
+\textbf{Machine Learning:} Scikit-learn, Keras, Pandas, NumPy, LSTM, Time-Series Forecasting, Portfolio Optimization\\
+\textbf{Databases and Tools:} MySQL, MongoDB, Redis, H2, ChromaDB, Docker, Git, Gradle, JUnit, SLF4J, Gunicorn, Nginx, OpenAPI, Postman\\
+\textbf{Computer Science:} Object-Oriented Programming, Operating Systems, Computer Networks, System Design
 
-\textbf{Backend:}
-& Spring Boot, Spring Data JPA, REST APIs, Node.js, Express.js, FastAPI, WebSocket, Microservices, JUnit, SLF4J \\
+\section{Relevant Coursework}
 
-\textbf{ML / Data:}
-& Scikit-learn, Keras, Pandas, NumPy, LSTM, Time-Series Forecasting, Portfolio Optimization, Plotly, Dash, Streamlit \\
-
-\textbf{Databases / Tools:}
-& MySQL, MongoDB, Redis, H2, ChromaDB, Docker, Git, GitHub, Postman, Gradle, Gunicorn, Nginx, OpenAPI \\
-
-\textbf{Core CS:}
-& Data Structures and Algorithms, OOP, DBMS, Operating Systems, Computer Networks, System Design \\
-
-\textbf{Coursework:}
-& Algorithms, DBMS, File Organization, Computer Organization, Theory of Computation, Big Data Analysis, Optimization, Probability and Statistics, Stochastic Processes, Linear Algebra, Discrete Mathematics, Graph Theory
-\end{tabularx}
+\textbf{Computer Science:} Algorithms, Data Structures, DBMS, File Organization, Computer Organization, Theory of Computation, Big Data Analysis.\\
+\textbf{Mathematics:} Optimization, Probability and Statistics, Stochastic Processes, Linear Algebra, Discrete Mathematics, Graph Theory.
 
 \section{Achievements}
 
 \begin{itemize}
-  \resumeItem{\textbf{Codeforces Expert} (max rating \textbf{1736}); \textbf{Global Rank 245} among 25,673 participants in Round 1093 (Div. 2).}
-  \resumeItem{Solved \textbf{500+} DSA problems across LeetCode, Codeforces, CodeChef, and HackerRank.}
-  \resumeItem{Awarded the \textbf{Reliance Foundation Undergraduate Scholarship} (top \textbf{0.8\%} of 120,000+ applicants).}
-  \resumeItem{Secured \textbf{Top 8\% in JEE Advanced} and \textbf{Top 1.2\% in JEE Main}; HackerRank Software Engineer Intern Certification.}
+  \resumeItem{\mbox{Rated Codeforces Expert with a maximum rating of 1736 and Global Rank 245 among 25,673 participants in Round 1093.}}
+  \resumeItem{\mbox{Solved more than 500 data structures and algorithms problems on LeetCode, Codeforces, CodeChef, and HackerRank.}}
+  \resumeItem{\mbox{Awarded the Reliance Foundation Undergraduate Scholarship, selected among the top 0.8 percent of over 120,000 applicants.}}
+  \resumeItem{\mbox{Secured a Top 8 percent JEE Advanced rank, a Top 1.2 percent JEE Main rank, and the HackerRank Intern certification.}}
 \end{itemize}
 
 \end{document}
