@@ -22,7 +22,7 @@
   {0em}
   {}
   [\vspace{-2pt}\titlerule]
-\titlespacing*{\section}{0pt}{7.5pt}{3.8pt}
+\titlespacing*{\section}{0pt}{8.5pt}{4.2pt}
 
 \newcommand{\resumeItem}[1]{\item #1}
 \newcommand{\pairItem}[2]{\item \mbox{#1}\\\mbox{#2}}
@@ -44,14 +44,14 @@
 
 \setlist[itemize]{
   leftmargin=1.15em,
-  itemsep=2.0pt,
-  topsep=0.8pt,
+  itemsep=2.6pt,
+  topsep=1pt,
   parsep=0pt,
   partopsep=0pt
 }
 
 \begin{document}
-\fontsize{9.0}{10.7}\selectfont
+\fontsize{9.05}{11.25}\selectfont
 
 \begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}X>{\raggedleft\arraybackslash}p{0.38\textwidth}@{}}
   \includegraphics[width=0.62in]{IIT_KGP.png} &
@@ -79,14 +79,14 @@ Bachelor of Science in Mathematics and Computing
 
 \begin{itemize}
   \pairItem
-    {Built a Java 21 Spring Boot service that generates ABT-to-NLP settlement files in Header, Record, and Trailer format.}
-    {Validated transit transactions and tracked every file from creation through loyalty-callback completion.}
+    {Built a \textbf{Java 21} Spring Boot service that generates ABT-to-NLP settlement files in Header, Record, and Trailer format.}
+    {Validated transit transactions and tracked every file through a \textbf{7-stage} path from creation to callback completion.}
   \pairItem
-    {Designed REST APIs for generation, status lookup, callbacks, and health checks, then stored results with Spring Data JPA.}
-    {Persisted file metadata, per-record outcomes, and four-digit daily sequences in an H2 database.}
+    {Designed \textbf{5 REST APIs} for generation, status lookup, callbacks, and health checks, then stored results with Spring Data JPA.}
+    {Persisted file metadata, per-record outcomes, and \textbf{4-digit} daily sequences in an H2 database.}
   \pairItem
-    {Implemented trailer checks, SHA-256 checksums, ZIP packaging, mock SFTP delivery, and year-month archival.}
-    {Added SLF4J request-id logging, OpenAPI docs, JUnit 5 tests, and Docker packaging for Railway deployment.}
+    {Implemented trailer checks, \textbf{SHA-256} checksums, ZIP packaging, mock SFTP delivery, and year-month archival.}
+    {Added SLF4J request-id logging, OpenAPI docs, \textbf{JUnit 5} tests, and Docker packaging for Railway deployment.}
 \end{itemize}
 
 \section{Projects}
@@ -98,11 +98,11 @@ Bachelor of Science in Mathematics and Computing
 
 \begin{itemize}
   \pairItem
-    {Building a machine learning pipeline that forecasts next-day Nifty 50 returns and then forms an optimized stock portfolio.}
-    {Feeding historical OHLCV prices and technical indicators into the forecast stage before capital is allocated.}
+    {Building a machine learning pipeline that forecasts next-day \textbf{Nifty 50} returns and then forms an optimized stock portfolio.}
+    {Feeding historical OHLCV prices and \textbf{5} technical indicators into the forecast stage before capital is allocated.}
   \pairItem
-    {Training Linear Regression, Random Forest, and LSTM models with walk-forward validation to block look-ahead leakage.}
-    {Ranking mean-variance portfolios by Sharpe ratio and maximum drawdown against equal-weight and index baselines.}
+    {Training \textbf{3} models, Linear Regression, Random Forest, and LSTM, with walk-forward validation to block look-ahead leakage.}
+    {Ranking mean-variance portfolios by \textbf{Sharpe ratio} and maximum drawdown against equal-weight and index baselines.}
 \end{itemize}
 
 \projectHeader
@@ -113,11 +113,11 @@ Bachelor of Science in Mathematics and Computing
 
 \begin{itemize}
   \pairItem
-    {Developed a live trading simulator that reads Level-2 order-book streams and estimates execution cost for market orders.}
-    {Modeled slippage, market impact, exchange fees, liquidity, and volatility inside the cost estimate.}
+    {Developed a live trading simulator that reads \textbf{Level-2} order-book streams and estimates execution cost for market orders.}
+    {Modeled \textbf{6} cost drivers: slippage, market impact, exchange fees, liquidity, volatility, and maker-taker mix.}
   \pairItem
-    {Designed a four-layer Redis publish-subscribe pipeline for ingestion, book updates, cost analysis, and live charts.}
-    {Deployed with Gunicorn and Nginx, added Redis failover, and wrote more than 100 tests for feeds and persistence.}
+    {Designed a \textbf{4-layer} Redis publish-subscribe pipeline for ingestion, book updates, cost analysis, and live charts.}
+    {Deployed with Gunicorn and Nginx, added Redis failover, and wrote more than \textbf{100} tests for feeds and persistence.}
 \end{itemize}
 
 \projectHeader
@@ -131,8 +131,8 @@ Bachelor of Science in Mathematics and Computing
     {Developed a checkout platform that routes payments and answers user questions with a retrieval-augmented assistant.}
     {Combined wallet, budget, and policy context so the assistant can return grounded financial answers.}
   \pairItem
-    {Ranked payment methods by gateway success, cashback, and gift-card expiry using cached Redis signals.}
-    {Extracted discounts from bank-offer images with GPT-4 Vision and ran three services with Docker Compose.}
+    {Ranked payment methods on \textbf{3 Redis} signals: gateway success, cashback value, and gift-card expiry.}
+    {Extracted discounts from bank-offer images with GPT-4 Vision and shipped \textbf{3} services with Docker Compose.}
 \end{itemize}
 
 \projectHeader
@@ -143,10 +143,10 @@ Bachelor of Science in Mathematics and Computing
 
 \begin{itemize}
   \pairItem
-    {Built a fraud detection model that scores each transaction from 0 to 100 percent risk using a Random Forest classifier.}
+    {Built a fraud detection model that scores each transaction from \textbf{0 to 100 percent} risk using a Random Forest classifier.}
     {Tuned the decision threshold on the precision-recall curve so genuine payments are not blocked by false alerts.}
   \pairItem
-    {Engineered amount, time, cardholder age, location, and merchant-category features for each scored transaction.}
+    {Engineered \textbf{5} features: amount, time, cardholder age, location, and merchant category for each scored transaction.}
     {Deployed a Streamlit dashboard for live scoring and used CCXT market data with an automatic offline fallback.}
 \end{itemize}
 
@@ -167,10 +167,10 @@ Bachelor of Science in Mathematics and Computing
 \section{Achievements}
 
 \begin{itemize}
-  \resumeItem{\mbox{Rated Codeforces Expert with a maximum rating of 1736 and Global Rank 245 among 25,673 participants in Round 1093.}}
-  \resumeItem{\mbox{Solved more than 500 data structures and algorithms problems on LeetCode, Codeforces, CodeChef, and HackerRank.}}
-  \resumeItem{\mbox{Awarded the Reliance Foundation Undergraduate Scholarship, selected among the top 0.8 percent of over 120,000 applicants.}}
-  \resumeItem{\mbox{Secured a Top 8 percent JEE Advanced rank, a Top 1.2 percent JEE Main rank, and the HackerRank Intern certification.}}
+  \resumeItem{\mbox{Rated Codeforces Expert with a maximum rating of \textbf{1736} and Global Rank \textbf{245} among \textbf{25,673} participants in Round 1093.}}
+  \resumeItem{\mbox{Solved more than \textbf{500} data structures and algorithms problems on LeetCode, Codeforces, CodeChef, and HackerRank.}}
+  \resumeItem{\mbox{Awarded the Reliance Foundation Undergraduate Scholarship, selected among the top \textbf{0.8 percent} of over \textbf{120,000} applicants.}}
+  \resumeItem{\mbox{Secured a Top \textbf{8 percent} JEE Advanced rank, a Top \textbf{1.2 percent} JEE Main rank, and the HackerRank Intern certification.}}
 \end{itemize}
 
 \end{document}
