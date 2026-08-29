@@ -1,0 +1,219 @@
+[
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 1.35,
+    "caption": "MUTE OFF tha...",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s01-son-meeting.png",
+    "dur": 3.124,
+    "caption": "Team, aaj ka target clear hai.",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/01_son.mp3"
+  },
+  {
+    "img": "wfh-s01-son-meeting.png",
+    "dur": 0.18,
+    "caption": "Team, aaj ka target clear hai.",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s02-mom-thali.png",
+    "dur": 3.412,
+    "caption": "Arre beta, khaana thanda ho raha hai!",
+    "sfx": "whoosh",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/02_mom.mp3"
+  },
+  {
+    "img": "wfh-s02-mom-thali.png",
+    "dur": 0.18,
+    "caption": "Arre beta, khaana thanda ho raha hai!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 2.788,
+    "caption": "Maa, meeting chal rahi hai!",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/03_son.mp3"
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 0.18,
+    "caption": "Maa, meeting chal rahi hai!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s10-mom-feed.png",
+    "dur": 2.812,
+    "caption": "Meeting se pet nahi bharta!",
+    "sfx": "rim",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/04_mom.mp3"
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 0.4,
+    "caption": "",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 4.252,
+    "caption": "Beta... sab kuch sun raha hoon.",
+    "sfx": "shock",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/05_boss.mp3"
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 0.18,
+    "caption": "Beta... sab kuch sun raha hoon.",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 4.156,
+    "caption": "Sorry sir! Mujhe laga mute ON hai!",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/06_son.mp3"
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 0.18,
+    "caption": "Sorry sir! Mujhe laga mute ON hai!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s04-sister-upi.png",
+    "dur": 3.772,
+    "caption": "Bhaiya, UPI kar do, parcel aa gaya!",
+    "sfx": "coin",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/07_sister.mp3"
+  },
+  {
+    "img": "wfh-s04-sister-upi.png",
+    "dur": 0.18,
+    "caption": "Bhaiya, UPI kar do, parcel aa gaya!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s05-dad-salary.png",
+    "dur": 5.644,
+    "caption": "Parcel? Raat ko? Salary kahan jaati hai?",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/08_dad.mp3"
+  },
+  {
+    "img": "wfh-s05-dad-salary.png",
+    "dur": 0.18,
+    "caption": "Parcel? Raat ko? Salary kahan jaati hai?",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 2.836,
+    "caption": "Papa, boss sun rahe hain!",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/09_son.mp3"
+  },
+  {
+    "img": "wfh-s03-son-panic.png",
+    "dur": 0.18,
+    "caption": "Papa, boss sun rahe hain!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s05-dad-salary.png",
+    "dur": 4.156,
+    "caption": "Boss sahab, salary mere account mein bhej dena.",
+    "sfx": "rim",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/10_dad.mp3"
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 0.38,
+    "caption": "",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 3.628,
+    "caption": "Uncle... yeh board meeting hai.",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/11_boss.mp3"
+  },
+  {
+    "img": "wfh-s06-boss-hear.png",
+    "dur": 0.18,
+    "caption": "Uncle... yeh board meeting hai.",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s07-dadi-shaadi.png",
+    "dur": 4.204,
+    "caption": "Board? Beta shaadi kab karoge?",
+    "sfx": "laugh_hit",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/12_dadi.mp3"
+  },
+  {
+    "img": "wfh-s08-family-chaos.png",
+    "dur": 0.36,
+    "caption": "",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s10-mom-feed.png",
+    "dur": 3.244,
+    "caption": "Pehle khaana kha, phir shaadi!",
+    "sfx": null,
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/13_mom.mp3"
+  },
+  {
+    "img": "wfh-s10-mom-feed.png",
+    "dur": 0.18,
+    "caption": "Pehle khaana kha, phir shaadi!",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s08-family-chaos.png",
+    "dur": 5.62,
+    "caption": "Meeting cancel. Beta... khaana kha lo.",
+    "sfx": "sting",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/14_boss.mp3"
+  },
+  {
+    "img": "wfh-s10-mom-feed.png",
+    "dur": 0.42,
+    "caption": "",
+    "sfx": null,
+    "voice": null
+  },
+  {
+    "img": "wfh-s09-end-laugh.png",
+    "dur": 3.7,
+    "caption": "CEO ki bhi nahi chalti Maa ke aage!",
+    "sfx": "laugh_hit",
+    "voice": "/Users/prabhatkumar/algo-trade-simulator/wfh-reel/audio/15_dadi.mp3"
+  },
+  {
+    "img": "wfh-s09-end-laugh.png",
+    "dur": 2.4,
+    "caption": "@family_drama_001",
+    "sfx": null,
+    "voice": null
+  }
+]
