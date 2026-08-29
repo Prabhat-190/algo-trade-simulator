@@ -24,132 +24,132 @@ W, H, FPS = 1080, 1920, 30
 HANDLE = "@family_drama_001"
 
 VOICES = {
-    "son": {"voice": "hi-IN-MadhurNeural", "rate": "+18%", "pitch": "+8Hz"},
-    "sister": {"voice": "hi-IN-SwaraNeural", "rate": "+20%", "pitch": "+14Hz"},
-    "mom": {"voice": "hi-IN-SwaraNeural", "rate": "+8%", "pitch": "-6Hz"},
-    "dad": {"voice": "hi-IN-MadhurNeural", "rate": "+6%", "pitch": "-12Hz"},
-    "dadi": {"voice": "hi-IN-SwaraNeural", "rate": "+2%", "pitch": "-16Hz"},
-    "boss": {"voice": "hi-IN-MadhurNeural", "rate": "-4%", "pitch": "-6Hz"},
+    "son": {"voice": "hi-IN-MadhurNeural", "rate": "+32%", "pitch": "+14Hz"},
+    "sister": {"voice": "hi-IN-SwaraNeural", "rate": "+34%", "pitch": "+18Hz"},
+    "mom": {"voice": "hi-IN-SwaraNeural", "rate": "+22%", "pitch": "-4Hz"},
+    "dad": {"voice": "hi-IN-MadhurNeural", "rate": "+20%", "pitch": "-16Hz"},
+    "dadi": {"voice": "hi-IN-SwaraNeural", "rate": "+16%", "pitch": "-18Hz"},
+    "boss": {"voice": "hi-IN-MadhurNeural", "rate": "+10%", "pitch": "-4Hz"},
 }
 
 LINES = [
     {
         "id": "01_son",
         "who": "son",
-        "text": "टीम, आज का टारगेट क्लियर है।",
-        "caption": "Team, aaj ka target clear hai.",
+        "text": "टीम, आज का टारगेट क्लियर है!",
+        "caption": "Team, aaj ka target clear hai!",
         "img": "wfh-s01-son-meeting.png",
         "sfx": None,
     },
     {
         "id": "02_mom",
         "who": "mom",
-        "text": "अरे बेटा, खाना ठंडा हो रहा है!",
-        "caption": "Arre beta, khaana thanda ho raha hai!",
+        "text": "ए बेटा! रोटी खा ले, ठंडा हो जाई!",
+        "caption": "Ae beta! Roti kha le, thanda ho jai!",
         "img": "wfh-s02-mom-thali.png",
         "sfx": "whoosh",
     },
     {
         "id": "03_son",
         "who": "son",
-        "text": "माँ, मीटिंग चल रही है!",
-        "caption": "Maa, meeting chal rahi hai!",
+        "text": "मइया, मीटिंग चल रहल बा!",
+        "caption": "Maiya, meeting chal rahal ba!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "04_mom",
         "who": "mom",
-        "text": "मीटिंग से पेट नहीं भरता!",
-        "caption": "Meeting se pet nahi bharta!",
+        "text": "मीटिंग-वीटिंग से पेट नइखे भरत!",
+        "caption": "Meeting-veeting se pet naikhe bharat!",
         "img": "wfh-s10-mom-feed.png",
         "sfx": "rim",
     },
     {
         "id": "05_boss",
         "who": "boss",
-        "text": "बेटा... सब कुछ सुन रहा हूँ।",
-        "caption": "Beta... sab kuch sun raha hoon.",
+        "text": "बेटा... हम सब सुन रहल बानी।",
+        "caption": "Beta... hum sab sun rahal bani.",
         "img": "wfh-s06-boss-hear.png",
         "sfx": "shock",
     },
     {
         "id": "06_son",
         "who": "son",
-        "text": "सॉरी सर! मुझे लगा म्यूट ऑन है!",
-        "caption": "Sorry sir! Mujhe laga mute ON hai!",
+        "text": "सॉरी सर! म्यूट समझली!",
+        "caption": "Sorry sir! Mute samajhli!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "07_sister",
         "who": "sister",
-        "text": "भैया, यूपीआई कर दो, पार्सल आ गया!",
-        "caption": "Bhaiya, UPI kar do, parcel aa gaya!",
+        "text": "भइया, यूपीआई कर दा! पार्सल आइल बा!",
+        "caption": "Bhaiya, UPI kar da! Parcel aail ba!",
         "img": "wfh-s04-sister-upi.png",
         "sfx": "coin",
     },
     {
         "id": "08_dad",
         "who": "dad",
-        "text": "पार्सल? रात को? सैलरी कहाँ जाती है?",
-        "caption": "Parcel? Raat ko? Salary kahan jaati hai?",
+        "text": "रात के पार्सल? पइसा फूंक देहल का?!",
+        "caption": "Raat ke parcel? Paisa phoonk dehal ka?!",
         "img": "wfh-s05-dad-salary.png",
         "sfx": None,
     },
     {
         "id": "09_son",
         "who": "son",
-        "text": "पापा, बॉस सुन रहे हैं!",
-        "caption": "Papa, boss sun rahe hain!",
+        "text": "बाबू, बॉस सुन रहल बा!",
+        "caption": "Babu, boss sun rahal ba!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "10_dad",
         "who": "dad",
-        "text": "बॉस साहब, सैलरी मेरे अकाउंट में भेज देना।",
-        "caption": "Boss sahab, salary mere account mein bhej dena.",
+        "text": "बाबू जी, सैलरी हमरा खाता में डाल दीं, एफडी करब!",
+        "caption": "Babu ji, salary hamra khata mein daal deen, FD karab!",
         "img": "wfh-s05-dad-salary.png",
         "sfx": "rim",
     },
     {
         "id": "11_boss",
         "who": "boss",
-        "text": "अंकल, ये बोर्ड मीटिंग है।",
-        "caption": "Uncle... yeh board meeting hai.",
+        "text": "अंकल... ये बोर्ड मीटिंग है!",
+        "caption": "Uncle... yeh BOARD meeting hai!",
         "img": "wfh-s06-boss-hear.png",
         "sfx": None,
     },
     {
         "id": "12_dadi",
         "who": "dadi",
-        "text": "बोर्ड? बेटा शादी कब करोगे?",
-        "caption": "Board? Beta shaadi kab karoge?",
+        "text": "बोर्ड? बेटा बियाह कब होई?!",
+        "caption": "Board? Beta biyah kab hoi?!",
         "img": "wfh-s07-dadi-shaadi.png",
         "sfx": "laugh_hit",
     },
     {
         "id": "13_mom",
         "who": "mom",
-        "text": "पहले खाना खा, फिर शादी!",
-        "caption": "Pehle khaana kha, phir shaadi!",
+        "text": "पहले रोटी, बाद में बियाह!",
+        "caption": "Pehle roti, baad mein biyah!",
         "img": "wfh-s10-mom-feed.png",
         "sfx": None,
     },
     {
         "id": "14_boss",
         "who": "boss",
-        "text": "मीटिंग कैंसिल। बेटा... खाना खा लो।",
-        "caption": "Meeting cancel. Beta... khaana kha lo.",
+        "text": "मीटिंग कैंसिल! बेटा... रोटी खा ले।",
+        "caption": "Meeting cancel! Beta... roti kha le.",
         "img": "wfh-s08-family-chaos.png",
         "sfx": "sting",
     },
     {
         "id": "15_dadi",
         "who": "dadi",
-        "text": "सीईओ की भी नहीं चलती माँ के आगे!",
-        "caption": "CEO ki bhi nahi chalti Maa ke aage!",
+        "text": "बिहार में डब्ल्यू एफ एच मतलब होल फैमिली हियरिंग!",
+        "caption": "Bihar mein WFH = Whole Family Hearing!",
         "img": "wfh-s09-end-laugh.png",
         "sfx": "laugh_hit",
     },
@@ -282,7 +282,7 @@ def generate_sfx() -> None:
 
     notes = [392, 494, 523, 587, 523, 494, 440, 392, 523, 587, 659, 587, 523, 494, 440, 392]
     music: list[float] = []
-    beat = 0.28
+    beat = 0.20
     for bar in range(10):
         for i, n in enumerate(notes):
             note = tone(n, beat * 0.85, sr, 0.09, decay=True)
@@ -312,24 +312,22 @@ def build_timeline() -> list[dict]:
             }
         )
 
-    add("wfh-s03-son-panic.png", 1.35, "MUTE OFF tha...")
+    add("wfh-s03-son-panic.png", 0.72, "MUTE OFF रहल बा 😭")
     for line in LINES:
         mp3 = AUDIO / f"{line['id']}.mp3"
         dur = probe_duration(mp3)
-        speak = max(0.70, dur + 0.10)
+        speak = max(0.38, dur / 1.18 + 0.01)
         add(line["img"], speak, line["caption"], line.get("sfx"), str(mp3))
         if line["id"] == "04_mom":
-            add("wfh-s06-boss-hear.png", 0.40, "")
+            add("wfh-s06-boss-hear.png", 0.22, "")
         elif line["id"] == "10_dad":
-            add("wfh-s06-boss-hear.png", 0.38, "")
+            add("wfh-s06-boss-hear.png", 0.20, "")
         elif line["id"] == "12_dadi":
-            add("wfh-s08-family-chaos.png", 0.36, "")
+            add("wfh-s08-family-chaos.png", 0.20, "")
         elif line["id"] == "14_boss":
-            add("wfh-s10-mom-feed.png", 0.42, "")
+            add("wfh-s10-mom-feed.png", 0.22, "")
         elif line["id"] == "15_dadi":
-            add("wfh-s09-end-laugh.png", 2.40, HANDLE)
-        else:
-            add(line["img"], 0.18, line["caption"])
+            add("wfh-s09-end-laugh.png", 1.35, HANDLE)
     return tl
 
 
@@ -360,7 +358,7 @@ def caption_image(src: Path, caption: str, title: bool = False) -> Path:
     draw.text((W - hw - 42, 46), HANDLE, font=handle_font, fill=(255, 230, 120, 255))
 
     if caption:
-        font = load_font(56 if title else 40)
+        font = load_font(58 if title else 44)
         words = caption.split()
         lines: list[str] = []
         cur = ""
@@ -397,7 +395,7 @@ def render_picture(timeline: list[dict]) -> Path:
         f.write("ffconcat version 1.0\n")
         for seg in timeline:
             src = FRAMES / seg["img"]
-            titled = seg.get("caption") in {"MUTE OFF tha...", HANDLE}
+            titled = seg.get("caption") in {"MUTE OFF रहल बा 😭", HANDLE}
             cap = caption_image(src, seg.get("caption") or "", title=titled)
             last_captioned = cap
             f.write(f"file '{cap}'\n")
@@ -446,7 +444,7 @@ def mix_audio(timeline: list[dict], total: float) -> Path:
             delay_ms = int(t * 1000)
             voice_filters.append(
                 f"[{next_idx}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,"
-                f"volume=2.6,adelay={delay_ms}|{delay_ms}[v{next_idx}]"
+                f"volume=2.85,atempo=1.18,adelay={delay_ms}|{delay_ms}[v{next_idx}]"
             )
             next_idx += 1
         if seg.get("sfx"):
@@ -456,12 +454,12 @@ def mix_audio(timeline: list[dict], total: float) -> Path:
                 delay_ms = int(t * 1000)
                 sfx_filters.append(
                     f"[{next_idx}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,"
-                    f"volume=0.5,adelay={delay_ms}|{delay_ms}[s{next_idx}]"
+                    f"volume=0.62,adelay={delay_ms}|{delay_ms}[s{next_idx}]"
                 )
                 next_idx += 1
         t += seg["dur"]
 
-    parts = [f"[1:a]aloop=loop=-1:size=2e+09,atrim=0:{total:.3f},volume=0.07[music]"]
+    parts = [f"[1:a]aloop=loop=-1:size=2e+09,atrim=0:{total:.3f},atempo=1.15,volume=0.10[music]"]
     mix_labels = ["[0:a]", "[music]"]
     for vf in voice_filters:
         parts.append(vf)
