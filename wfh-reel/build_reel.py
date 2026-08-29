@@ -24,12 +24,12 @@ W, H, FPS = 1080, 1920, 30
 HANDLE = "@family_drama_001"
 
 VOICES = {
-    "son": {"voice": "hi-IN-MadhurNeural", "rate": "+32%", "pitch": "+14Hz"},
-    "sister": {"voice": "hi-IN-SwaraNeural", "rate": "+34%", "pitch": "+18Hz"},
-    "mom": {"voice": "hi-IN-SwaraNeural", "rate": "+22%", "pitch": "-4Hz"},
-    "dad": {"voice": "hi-IN-MadhurNeural", "rate": "+20%", "pitch": "-16Hz"},
-    "dadi": {"voice": "hi-IN-SwaraNeural", "rate": "+16%", "pitch": "-18Hz"},
-    "boss": {"voice": "hi-IN-MadhurNeural", "rate": "+10%", "pitch": "-4Hz"},
+    "son": {"voice": "hi-IN-MadhurNeural", "rate": "+26%", "pitch": "+10Hz"},
+    "sister": {"voice": "hi-IN-SwaraNeural", "rate": "+28%", "pitch": "+14Hz"},
+    "mom": {"voice": "hi-IN-SwaraNeural", "rate": "+16%", "pitch": "-6Hz"},
+    "dad": {"voice": "hi-IN-MadhurNeural", "rate": "+14%", "pitch": "-14Hz"},
+    "dadi": {"voice": "hi-IN-SwaraNeural", "rate": "+10%", "pitch": "-16Hz"},
+    "boss": {"voice": "hi-IN-MadhurNeural", "rate": "+8%", "pitch": "-2Hz"},
 }
 
 LINES = [
@@ -44,72 +44,72 @@ LINES = [
     {
         "id": "02_mom",
         "who": "mom",
-        "text": "ए बेटा! रोटी खा ले, ठंडा हो जाई!",
-        "caption": "Ae beta! Roti kha le, thanda ho jai!",
+        "text": "ए बेटा, रोटी खा ले, ठंडा हो जाएगा!",
+        "caption": "Ae beta, roti kha le, thanda ho jayega!",
         "img": "wfh-s02-mom-thali.png",
         "sfx": "whoosh",
     },
     {
         "id": "03_son",
         "who": "son",
-        "text": "मइया, मीटिंग चल रहल बा!",
-        "caption": "Maiya, meeting chal rahal ba!",
+        "text": "मइया, मीटिंग चल रही है!",
+        "caption": "Maiya, meeting chal rahi hai!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "04_mom",
         "who": "mom",
-        "text": "मीटिंग-वीटिंग से पेट नइखे भरत!",
-        "caption": "Meeting-veeting se pet naikhe bharat!",
+        "text": "मीटिंग-वीटिंग से पेट नहीं भरता!",
+        "caption": "Meeting-veeting se pet nahi bharta!",
         "img": "wfh-s10-mom-feed.png",
         "sfx": "rim",
     },
     {
         "id": "05_boss",
         "who": "boss",
-        "text": "बेटा... हम सब सुन रहल बानी।",
-        "caption": "Beta... hum sab sun rahal bani.",
+        "text": "बेटा... हम सब सुन रहे हैं।",
+        "caption": "Beta... hum sab sun rahe hain.",
         "img": "wfh-s06-boss-hear.png",
         "sfx": "shock",
     },
     {
         "id": "06_son",
         "who": "son",
-        "text": "सॉरी सर! म्यूट समझली!",
-        "caption": "Sorry sir! Mute samajhli!",
+        "text": "सॉरी सर! मुझे लगा म्यूट ऑन है!",
+        "caption": "Sorry sir! Mujhe laga mute ON hai!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "07_sister",
         "who": "sister",
-        "text": "भइया, यूपीआई कर दा! पार्सल आइल बा!",
-        "caption": "Bhaiya, UPI kar da! Parcel aail ba!",
+        "text": "भैया, यूपीआई कर दो, पार्सल आ गया!",
+        "caption": "Bhaiya, UPI kar do, parcel aa gaya!",
         "img": "wfh-s04-sister-upi.png",
         "sfx": "coin",
     },
     {
         "id": "08_dad",
         "who": "dad",
-        "text": "रात के पार्सल? पइसा फूंक देहल का?!",
-        "caption": "Raat ke parcel? Paisa phoonk dehal ka?!",
+        "text": "रात को पार्सल? पइसा फूंक दिया का?!",
+        "caption": "Raat ko parcel? Paisa phoonk diya ka?!",
         "img": "wfh-s05-dad-salary.png",
         "sfx": None,
     },
     {
         "id": "09_son",
         "who": "son",
-        "text": "बाबू, बॉस सुन रहल बा!",
-        "caption": "Babu, boss sun rahal ba!",
+        "text": "बाबू, बॉस सुन रहे हैं!",
+        "caption": "Babu, boss sun rahe hain!",
         "img": "wfh-s03-son-panic.png",
         "sfx": None,
     },
     {
         "id": "10_dad",
         "who": "dad",
-        "text": "बाबू जी, सैलरी हमरा खाता में डाल दीं, एफडी करब!",
-        "caption": "Babu ji, salary hamra khata mein daal deen, FD karab!",
+        "text": "बाबू जी, सैलरी मेरे खाते में डाल दीजिए, एफडी कर देंगे!",
+        "caption": "Babu ji, salary mere khate mein daal dijiye, FD kar denge!",
         "img": "wfh-s05-dad-salary.png",
         "sfx": "rim",
     },
@@ -124,8 +124,8 @@ LINES = [
     {
         "id": "12_dadi",
         "who": "dadi",
-        "text": "बोर्ड? बेटा बियाह कब होई?!",
-        "caption": "Board? Beta biyah kab hoi?!",
+        "text": "बोर्ड? बेटा बियाह कब होगा?!",
+        "caption": "Board? Beta biyah kab hoga?!",
         "img": "wfh-s07-dadi-shaadi.png",
         "sfx": "laugh_hit",
     },
@@ -140,8 +140,8 @@ LINES = [
     {
         "id": "14_boss",
         "who": "boss",
-        "text": "मीटिंग कैंसिल! बेटा... रोटी खा ले।",
-        "caption": "Meeting cancel! Beta... roti kha le.",
+        "text": "मीटिंग कैंसिल! बेटा... रोटी खा लो।",
+        "caption": "Meeting cancel! Beta... roti kha lo.",
         "img": "wfh-s08-family-chaos.png",
         "sfx": "sting",
     },
@@ -312,7 +312,7 @@ def build_timeline() -> list[dict]:
             }
         )
 
-    add("wfh-s03-son-panic.png", 0.72, "MUTE OFF रहल बा 😭")
+    add("wfh-s03-son-panic.png", 0.72, "MUTE OFF tha 😭")
     for line in LINES:
         mp3 = AUDIO / f"{line['id']}.mp3"
         dur = probe_duration(mp3)
@@ -395,7 +395,7 @@ def render_picture(timeline: list[dict]) -> Path:
         f.write("ffconcat version 1.0\n")
         for seg in timeline:
             src = FRAMES / seg["img"]
-            titled = seg.get("caption") in {"MUTE OFF रहल बा 😭", HANDLE}
+            titled = seg.get("caption") in {"MUTE OFF tha 😭", HANDLE}
             cap = caption_image(src, seg.get("caption") or "", title=titled)
             last_captioned = cap
             f.write(f"file '{cap}'\n")
