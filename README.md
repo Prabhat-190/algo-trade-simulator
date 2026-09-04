@@ -4,6 +4,8 @@ Real-time transaction cost simulator. Takes L2 orderbook data and estimates fees
 
 Doesn't place trades. Just a pre-trade cost tool with a Dash UI.
 
+**SkillUp × IBM SkillsBuild:** [how IBM Bob was used](IBM_BOB.md) · [slides (pptx)](docs/hackathon/Algo_Trade_Simulator.pptx)
+
 ## Run locally
 
 ```bash
