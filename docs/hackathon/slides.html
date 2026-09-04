@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Algo Trade Simulator — SkillUp</title>
+  <style>
+    :root { --bg:#04060a; --card:#0d1422; --accent:#00e5ff; --text:#fff; --muted:#b0c4de; --dim:#64748b; }
+    * { box-sizing: border-box; }
+    html, body { margin:0; background:var(--bg); color:var(--text); font-family: Calibri, "Segoe UI", sans-serif; }
+    .slide { min-height:100vh; padding:56px 72px 72px; border-left:8px solid var(--accent); page-break-after:always; }
+    h1 { font-size:42px; margin:0 0 24px; }
+    h2 { color:var(--accent); font-size:16px; letter-spacing:.12em; margin:0 0 12px; }
+    p, li { font-size:22px; color:var(--muted); line-height:1.45; }
+    ul { padding-left:1.2em; }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .card { background:var(--card); padding:20px 22px; border-radius:10px; }
+    .card h3 { margin:0 0 10px; color:var(--accent); font-size:18px; }
+    img { max-width:100%; border-radius:8px; }
+    .foot { position:fixed; bottom:16px; left:80px; color:var(--dim); font-size:13px; }
+    @media print { .foot { display:none; } .slide { min-height:auto; } }
+  </style>
+</head>
+<body>
+  <div class="foot">Algo Trade Simulator · SkillUp × IBM SkillsBuild · Prabhat Kumar, IIT Kharagpur · arrow keys / print to PDF</div>
+
+  <section class="slide">
+    <h2>SKILLUP HACKATHON × IBM SKILLSBUILD</h2>
+    <h1>Algo Trade Simulator</h1>
+    <p>Pre-trade cost analysis: slippage, fees, market impact</p>
+    <p>Prabhat Kumar · solo · IIT Kharagpur</p>
+    <p>Does not place trades. Shows what a market order would cost.</p>
+  </section>
+
+  <section class="slide">
+    <h1>The problem</h1>
+    <div class="grid">
+      <div class="card"><h3>What people see</h3><ul><li>Mid price</li><li>Fill assumed at mid</li><li>Clean backtest PnL</li></ul></div>
+      <div class="card"><h3>What they pay</h3><ul><li>Slippage</li><li>Fees</li><li>Market impact</li></ul></div>
+      <div class="card"><h3>Why it hurts</h3><ul><li>Thin book kills a small edge</li><li>Live looks worse than paper</li><li>Strategy vs cost is mixed</li></ul></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h1>Who it is for</h1>
+    <ul>
+      <li>Students and first algo writers — not a broker</li>
+      <li>No exchange API keys. Nothing is sent to a venue</li>
+      <li>Change size, side, fee tier in the browser</li>
+      <li>Synthetic book if Redis or a live feed is down</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h1>What I built</h1>
+    <p>A Dash dashboard on a live or synthetic L2 book. Estimates slippage, fees, Almgren–Chriss impact, maker/taker, net cost.</p>
+    <p>FeedManager picks the source. TradeSimulator is the only place the models run.</p>
+  </section>
+
+  <section class="slide">
+    <h1>Dashboard</h1>
+    <img src="dashboard.png" alt="Algo Trade Simulator dashboard">
+  </section>
+
+  <section class="slide">
+    <h1>One run — BTC-USDT buy $100</h1>
+    <ul>
+      <li>Slippage $0.0062 (0.0062%)</li>
+      <li>Fees $0.1201 (0.1201%)</li>
+      <li>Impact $0.0055 (0.0055%)</li>
+      <li>Net $0.1319 (0.1319%) · latency 0.75 ms</li>
+    </ul>
+    <p>Fees dominate a small order. Impact stays tiny at $100.</p>
+  </section>
+
+  <section class="slide">
+    <h1>IBM Bob</h1>
+    <div class="grid">
+      <div class="card"><h3>Plan</h3><p>Book → net cost. One Railway service. Synthetic if Redis is down.</p></div>
+      <div class="card"><h3>Ask</h3><p>Slippage units. Flat 1% impact. Rejected depth-as-ADV.</p></div>
+      <div class="card"><h3>Agent</h3><p>Feed manager, skip Redis, local CSS, tests.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h1>Thanks</h1>
+    <p>github.com/Prabhat-190/algo-trade-simulator</p>
+    <p>IBM_BOB.md · docs/hackathon/Algo_Trade_Simulator.pptx</p>
+    <p>Prabhat Kumar · TradeSim · IIT Kharagpur</p>
+  </section>
+</body>
+</html>

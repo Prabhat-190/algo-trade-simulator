@@ -91,6 +91,11 @@ trading/
     ui/            # dash layout / callbacks / css
 ```
 
+## SkillUp / IBM Bob
+
+`IBM_BOB.md` is the write-up of how IBM Bob was used (Plan / Ask / Agent).  
+Slides for judges: `docs/hackathon/Algo_Trade_Simulator.pptx`
+
 ## License
 
 MIT
