@@ -3,13 +3,11 @@
 Solo submission. One person fills the form.
 
 **Full Name:** Prabhat Kumar  
-**Phone:** 7367905043  
-**Email:** sauravsandilya7367905043@gmail.com  
 **Team Name:** TradeSim  
 **College Name:** Indian Institute of Technology, Kharagpur  
 **Project Name:** Algo Trade Simulator  
 
-**Team Member 1:** sauravsandilya7367905043@gmail.com  
+**Team Member 1:** (your email)  
 **Team Member 2–5:** leave blank
 
 **GitHub:** https://github.com/Prabhat-190/algo-trade-simulator  
