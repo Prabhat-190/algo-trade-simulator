@@ -81,12 +81,16 @@ def _body(slide, lines, left=0.5, top=1.15, width=12.3, height=5.6, size=20, col
     return box
 
 
-def _card(slide, l, t, w, h, title, lines, accent=ACCENT):
-    shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(l), Inches(t), Inches(w), Inches(h))
+def _card(slide, left, top, width, height, title, lines, accent=ACCENT):
+    shape = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height),
+    )
     _fill(shape, CARD)
-    stripe = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(l), Inches(t), Inches(0.08), Inches(h))
+    stripe = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(left), Inches(top), Inches(0.08), Inches(height))
     _fill(stripe, accent)
-    box = slide.shapes.add_textbox(Inches(l + 0.25), Inches(t + 0.15), Inches(w - 0.4), Inches(h - 0.25))
+    box = slide.shapes.add_textbox(
+        Inches(left + 0.25), Inches(top + 0.15), Inches(width - 0.4), Inches(height - 0.25),
+    )
     tf = box.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
